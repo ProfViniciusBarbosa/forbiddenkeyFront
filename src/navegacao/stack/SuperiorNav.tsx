@@ -7,6 +7,8 @@ import TelaCriarLogin from '../../telas/TelaCriarLogin';
 import TelaChaves from '../../telas/TelaChaves';
 import TelaJogo from '../../telas/TelaJogo';
 import TelaCarinho from '../../telas/TelaCarrinho';
+import TelaCartao from '../../telas/telaCartao';
+import TelaConta from '../../telas/TelaConta';
 
 
 const Stack = createStackNavigator();
@@ -24,6 +26,10 @@ const PrincipalNavegacao = () => {
       <Stack.Screen name="Catalogo" component={TelaCatalogo} />
       <Stack.Screen name="Jogo" component={TelaJogo} />
       <Stack.Screen name="Carrinho" component={TelaCarinho} />
+      <Stack.Screen name="Cartao" component={TelaCartao} />
+      <Stack.Screen name="Entrar" component={TelaLogin} />
+      <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
+      <Stack.Screen name="Conta" component={TelaConta} />
 
     </Stack.Navigator>
   );
@@ -34,6 +40,7 @@ const SecundariaNavegacao = () => {
     <Stack.Navigator screenOptions={screenOptionStyle}>
       <Stack.Screen name="Entrar" component={TelaLogin} />
       <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
+      <Stack.Screen name="Conta" component={TelaConta} />
     </Stack.Navigator>
   );
 }
@@ -41,6 +48,9 @@ const TerceiraNavegacao = () => {
   return (
     <Stack.Navigator screenOptions={screenOptionStyle}>
       <Stack.Screen name="Chave" component={TelaChaves} />
+      <Stack.Screen name="Entrar" component={TelaLogin} />
+      <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
+      <Stack.Screen name="Conta" component={TelaConta} />
     </Stack.Navigator>
   );
 }

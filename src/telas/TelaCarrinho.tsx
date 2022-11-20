@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -7,6 +7,8 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Alert,
+  BackHandler,
 } from 'react-native';
 
 import RadioForm, {
@@ -15,74 +17,226 @@ import RadioForm, {
   RadioButtonLabel,
 } from 'react-native-simple-radio-button';
 import COR from '../assets/CSS/COR';
+import axios from '../componentes/customAxios';
+import Config from '../assets/mocks/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
-const cartao = [
-  {
-    label: 'Cartão MASTERCARD final 1234',
-    value: 1,
-  },
-  {
-    label: 'Cartão VISA final 5678',
-    value: 2,
-  },
-  {
-    label: 'Cartão ELO final 7890',
-    value: 3,
-  },
-];
-export default function TelaCart() {
+
+export default function TelaCart({navigation}) {
+
   const [value, setValue] = useState('');
+
+  const [currentCart, setCurrentCart] = useState([{}]);
+
+  const [card, setCard] = useState([{}])
+
+
+  useEffect(()=>{
+    GetCurrentCart();
+    GetCartoes();
+
+    const backAction = () => {
+
+      navigation.goBack()
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  
+  const [itensCard, setItensCard] = useState([]);
+  
+  async function GetCartoes(){
+      
+    try{
+      const resp = await axios.get(Config.API_BASE_URL_CARD)
+
+       if(resp != null && resp != undefined){
+        setCard(resp.data)
+
+        let newArray = [];
+
+        var quantidadeChaves = Object.keys(card).length
+
+        for(var i = 0; i < quantidadeChaves; i++){
+
+            newArray.push({
+                label: card[i].bannerDTO.name,
+                value: card[i].id,
+            })
+
+            setItensCard(newArray)
+        }
+        }
+        
+    }
+      catch (e)
+      {
+        console.log(e)
+      }
+  }
+
+
+  async function GetCurrentCart(){
+    let role = await AsyncStorage.getItem('tipoUser');
+    if(role == "ROLE_CUSTOMER"){
+      try{
+        const response  = await axios.get(Config.API_CURRENT_CART)
+
+        console.log(response.data)
+
+        if(response != null){
+          setCurrentCart(response.data)
+        }
+        else{
+          Alert.alert(
+            "Carrinho vazio !",
+            "Adicione itens ao seu carrinho, para vizualizar !",
+            [
+              {
+                text: "OK",
+              },
+            ]
+          );
+        }
+      }
+        catch (erros)
+        {
+          console.log(erros)
+        }
+    }
+    else{
+      Alert.alert(
+        "Não é possivel adicionar ou vizualizar itens do carrinho !",
+        "Logue na aplicação para vizualizar e adiconar itens ao carrinho!",
+        [
+          {
+            text: "OK",
+            onPress: () => (navigation.navigate("Entrar"))
+          },
+        ]
+      );
+    }
+  }
+
+  async function removeItemByCart(idItem) {
+    try{
+      const response = await axios.delete(Config.API_BASE_URL_CART + idItem)
+      Alert.alert('Item removido',
+      'Operção feita com sucesso',[
+        {
+          text:"OK"
+        },
+      ]);
+    }
+    catch(error){
+
+      Alert.alert(
+        "Error!" + error,
+        "Não foi possivel remover item do carrinho!",
+        [
+          {
+            text: "OK",
+          },
+        ]
+      );
+    }
+  }
+
+  // async function GetCards() {
+  //   try{
+  //     const response = await axios.get(Config.API_BASE_URL_CARD)
+
+  //     if(response != null){
+  //       setCard(response.data.content);
+  //     }
+  //     else{
+  //       Alert.alert(
+  //         "Vazio, nenhum cartão cadastrado!",
+  //         "Deseja cadastar um novo ?!",
+  //         [
+  //           {
+  //             text: "sim",
+  //             onPress: () => (navigation.navigate(""))
+  //           },
+
+  //           {
+  //             text: "não",
+  //             onPress: () => (navigation.navigate(""))
+  //           },
+  //         ]
+  //       );
+  //     }
+  //   }
+  //   catch(error){
+  //     console.log(error)
+  //   }
+  // }
+
   return (
     <View style={styles.center}>
       <View style={styles.viewtitulo}>
-        <Text style={styles.titulo}>Tela carrinho </Text>
+        <Text style={styles.titulo}> Carrinho </Text>
       </View>
 
-      <View style={styles.cardFormato}>
-        <Image
-          source={{
-            uri: 'https://upload.wikimedia.org/wikipedia/pt/3/34/Nova_capa_de_The_Sims_4.png',
-          }}
-          style={{ width: 130, height: 100 }}
-        />
-
-        <View style={styles.content}>
-          <View style={styles.viewTituloJogo}>
-            <Text numberOfLines={1} style={styles.tituloJogo}>
-              THE SIMS 4 - DELUXE
-            </Text>
+      {
+        currentCart?
+        currentCart.map((jogo,key)=>(
+          <View key={key} style={styles.cardFormato}>
+          <Image
+            source={{
+              uri: jogo.imgUrl,
+            }}
+            style={{ width: 130, height: 100 }}
+          />
+  
+          <View style={styles.content}>
+            <View style={styles.viewTituloJogo}>
+              <Text numberOfLines={1} style={styles.tituloJogo}>
+                {jogo.name}
+              </Text>
+            </View>
+  
+            <TouchableOpacity onPress={()=>removeItemByCart(jogo.id)} style={styles.viewRemover}>
+              <Text style={styles.Remover}>remover</Text>
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity style={styles.viewRemover}>
-            <Text style={styles.Remover}>remover</Text>
-          </TouchableOpacity>
         </View>
-      </View>
-
+        )): null
+      }
+      
       <View style={styles.linha} />
 
       <View style={styles.viewRow}>
         <Text style={styles.Total}>TOTAL</Text>
 
-        <Text style={styles.Total}>150,90</Text>
-      </View>
+        <Text style={styles.Total}>{currentCart.totalValue}</Text>
+      </View> 
 
       <View style={styles.linha} />
 
       <View style={styles.viewAddPagamento}>
         <Text style={styles.AddPagamento}>Escolher forma de pagamento</Text>
       </View>
-      <View style={styles.RadioButton}>
-        <RadioForm
-          radio_props={cartao}
-          initial={0}
-          onPress={item => {
-            setValue(item);
-          }}
-          buttonColor={COR.verdeFosco}
-        />
-      </View>
+
+          <View style={styles.RadioButton}>
+            <RadioForm
+              radio_props={itensCard}
+              initial={0}
+              onPress={item => {
+              setValue(item);
+              }}
+              buttonColor={COR.verdeFosco}
+            />
+          </View>
+
       {/*
       <TouchableOpacity>
         <Text>Cartao final 1234</Text>

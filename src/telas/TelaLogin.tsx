@@ -1,18 +1,16 @@
-import React, {useState,useRef} from 'react';
-import { Text, View ,TextInput, KeyboardAvoidingView, Image, ImageBackground,TouchableOpacity } from 'react-native';
+import React, {useState,useRef, useEffect} from 'react';
+import {Text, View ,TextInput, KeyboardAvoidingView, Image, ImageBackground,TouchableOpacity,BackHandler,Alert } from 'react-native';
 import olhoAberto from "../assets/icons/olho.png";
 import olhoFechado from "../assets/icons/olho-2.png";
 import fundoLogin from "../assets/fundo/login.jpg";
 import logo from "../assets/logo/logo.png";
 import COR from '../assets/CSS/COR';
-import axios from '../componentes/customAxios';
-import Config from '../assets/mocks/Config';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginService from '../componentes/loginService';
+import TelaConta from './TelaConta';
 
 
-const TelaLogin = ({navigation})=>{
+const TelaLogin = (props)=>{
 
    const [usuarioLogin,setUsuarioLogin] = useState("")
    
@@ -26,6 +24,32 @@ const TelaLogin = ({navigation})=>{
 
    const [Errou,setErrou] = useState(false)
 
+   const [token,setToken] = useState('');
+
+   const [logado,setLogado] = useState("false");
+   
+   useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Calma ae amigão!", "Você realmente deseja sair do app?", [
+        {
+          text: "não",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "Sim", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+   },[])
+ 
+   
    const botaoLogin = async() => {
     if(usuarioLogin.length <= 2 || senhaLogin.length <= 2){
        
@@ -42,15 +66,26 @@ const TelaLogin = ({navigation})=>{
           }
              const resp = await LoginService.signin({username:usuarioLogin,password: senhaLogin})
 
+              var tokenzin = await AsyncStorage.getItem('token')
+              if(tokenzin != null){
+                setToken(JSON.stringify(tokenzin));
+                await AsyncStorage.setItem("logado","true")
+                setLogado("true");
+
+              }
+              
              }catch(error){
                 
              }
        }
-   
+       
 }
     
     return(
-        <ImageBackground source={fundoLogin}
+      <>
+      {
+        logado == "false"?
+        <ImageBackground source = {fundoLogin}
         resizeMode="cover"
         style={{flex:1,
             justifyContent:'flex-end'}}>
@@ -74,8 +109,8 @@ const TelaLogin = ({navigation})=>{
             onSubmitEditing = {() => {
                 refInput.current.focus();
              }}
-             returnKeyType="next"
-             blurOnSubmit={false}
+            returnKeyType="next"
+            blurOnSubmit={false}
             placeholder="Digite Usuário"
             placeholderTextColor={Errou? COR.branco:COR.cinza}
             multiline={false}
@@ -164,12 +199,16 @@ const TelaLogin = ({navigation})=>{
         <Text style={{fontSize:20,paddingVertical:6,alignSelf:'center',color:COR.branco}}>Entrar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{alignSelf:'center', marginTop:20,backgroundColor:COR.vinho, width:150, height:40, borderRadius:8}}
-            onPress={() => navigation.navigate("CriarLogin")}>
+            onPress={() => props.navigation.navigate("CriarLogin")}>
             <Text style={{fontSize:20,paddingVertical:6,alignSelf:'center',color:COR.branco}}>Cadastrar-se</Text>
         </TouchableOpacity>
         </View>
         </KeyboardAvoidingView>
         </ImageBackground>
+        :
+        <TelaConta navigation = {props.navigation}/>
+      }
+      </>
     )
 }
 export default TelaLogin;

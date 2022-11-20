@@ -1,5 +1,5 @@
-import React, {useState,useRef} from 'react';
-import { Text, View ,TextInput, KeyboardAvoidingView, Image, ImageBackground,TouchableOpacity,Alert } from 'react-native';
+import React, {useState,useRef, useEffect} from 'react';
+import { Text, View ,TextInput, KeyboardAvoidingView, Image, ImageBackground,TouchableOpacity,Alert,BackHandler} from 'react-native';
 import COR from '../assets/CSS/COR';
 import olhoAberto from "../assets/icons/olho.png";
 import olhoFechado from "../assets/icons/olho-2.png";
@@ -25,6 +25,21 @@ export default function TelaCriarLogin({navigation}){
      const [hidePass,setHidePass] = useState (true);
 
      const [Errou,setErrou] = useState(false)
+
+     useEffect(() => {
+      const backAction = () => {
+        
+        navigation.goBack()
+        return true;
+      };
+  
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+  
+      return () => backHandler.remove();
+    }, []);
       
      const botaoLogin = async() => {
 
@@ -44,18 +59,6 @@ export default function TelaCriarLogin({navigation}){
         try{
                const resp = await axios.post(Config.API_CRIA_USER,
                   params) 
-                  console.log(params)      
-              if(resp){
-                if(resp.data.errors.field == "email"){
-
-                  console.log(resp.data.errors.field)
-                  Alert.alert(
-                   "Email já existente",
-                   resp.data.errors.message,
-                 );
-                }
-                else{
-                  console.log("beringela")
                   Alert.alert(
                     "Usuário Criado",
                     "O usuário foi adicionado, faça login para entrar em sua conta!",
@@ -66,10 +69,19 @@ export default function TelaCriarLogin({navigation}){
                       },
                     ]
                   );
-                }
-              }
+              
                }catch(error){
                   console.log(error)
+
+                      Alert.alert(
+                       "Email já existente",
+                       "O Email informado já existe",
+                     );
+                    
+      
+                    
+    
+                
                }
          }
         }

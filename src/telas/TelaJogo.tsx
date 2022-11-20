@@ -1,12 +1,13 @@
-import axios from 'axios';
+import axios from '../componentes/customAxios';
 import React, { useEffect, useState } from 'react';
-import { Text, View ,StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity} from 'react-native';
+import { Text, View ,StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity, Alert,BackHandler} from 'react-native';
 import COR from '../assets/CSS/COR';
 import Config from '../assets/mocks/Config';
 import BarraSuperior from '../componentes/BarraSuperior';
 import carrinho from '../assets/icons/carrinho.png';
 
 import { LogBox } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -24,14 +25,58 @@ export default function TelaJogo({route}){
 
     const [distribuidora,setDistribuidora] = useState('');
 
-    async function checkCarrinhoELoginEnvio(idJogo){
-        
-    }
+    // async function  verificaCart() {
+    //     const responseCart = await axios.get(Config.API_CURRENT_CART)
 
-    useEffect(()=>{
-        GetJogos();
-      },[])
-    
+    //     if(responseCart != null){
+            
+    //     }
+    // }
+
+    async function addItemToCart(idJogo){
+     let role = await AsyncStorage.getItem('tipoUser');
+     
+     const responseCart = await axios.get(Config.API_CURRENT_CART)
+
+     console.log(responseCart.data)
+
+
+    if(role == "ROLE_CUSTOMER"){
+        
+        try{
+            await axios.put(Config.API_BASE_URL_CART + idJogo)
+            route.params.nav.navigate('Carrinho')
+        }
+        catch(error){console.log(error)}
+    }else{
+        Alert.alert(
+            "Necessário login",
+            "Para adicionar itens ao seu carrinho, faça login!",
+            [
+              {
+                text: "OK",
+                onPress: () => (route.params.nav.navigate('Entrar'))
+              },
+            ]
+          );
+    }
+}
+useEffect(() => {
+    GetJogos();
+
+    const backAction = () => {
+
+      route.params.nav.goBack()
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
     async function GetJogos(){
       
@@ -72,7 +117,7 @@ export default function TelaJogo({route}){
                         R${jogoGetById.price}
                  </Text>
                 </View>
-                <TouchableOpacity style={styles.carrinhoBox} onPress={()=>checkCarrinhoELoginEnvio(jogoGetById.id)}>
+                <TouchableOpacity style={styles.carrinhoBox} onPress={()=>addItemToCart(jogoGetById.id)}>
                     <Image style={{width:40,height:40,alignSelf:'center'}} source={carrinho} />
                  </TouchableOpacity>
             </View>

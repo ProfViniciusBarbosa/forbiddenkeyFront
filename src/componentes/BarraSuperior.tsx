@@ -13,9 +13,7 @@ export default function BarraSuperior(props){
     return(
     <View style={{width:width,height:70, backgroundColor:COR.verdeFosco,borderBottomLeftRadius:8,borderBottomRightRadius:8}}>
         <View style={{flexDirection:'row',width:width,height:60,backgroundColor:COR.branco,borderBottomLeftRadius:10,borderBottomRightRadius:10}}>
-        <TouchableOpacity style={{paddingVertical:15,paddingLeft:5,height:30,width:30}}>
-            <Image source={menu} style={{height:30,width:30}}/>
-        </TouchableOpacity>
+        <View style={{paddingVertical:15,paddingLeft:5,height:30,width:30}}/>
         <Text style={{marginLeft:60,alignSelf:'center',fontSize:25,width:160}}>{props.title}</Text>
         <TouchableOpacity style={{paddingVertical:15,paddingHorizontal:20,height:35,width:35}} onPress={() => props.navigation.navigate("Catalogo",{nav:props.navigation})} >
             <Image source={pesquisa} style={{height:35,width:35}}/>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { PrincipalNavegacao, SecundariaNavegacao, TerceiraNavegacao } from "../stack/SuperiorNav.tsx"; 
 
@@ -11,7 +11,8 @@ import { Image } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
-const InferiorNav = () => {
+const InferiorNav = ({navigation}) => {
+
     return (
         <Tab.Navigator screenOptions={{
             tabBarActiveBackgroundColor:COR.cinza,
@@ -24,9 +25,9 @@ const InferiorNav = () => {
                 style={{ width: 30, height: 30 }}
                 source={inicio}/>)}}}
           />
-          <Tab.Screen name="Login" component={SecundariaNavegacao} options={{
+          <Tab.Screen name="Login" component={SecundariaNavegacao} initialParams={{navigation:navigation}} options={{
           tabBarLabel: 'Login',tabBarIcon: () => {
-            return (<Image
+            return (<Image 
                 style={{ width: 30, height: 30 }}
                 source={deslogado}/>)}}}
                 />

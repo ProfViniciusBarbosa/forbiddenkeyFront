@@ -24,7 +24,7 @@ class CustomAxios {
     if (token) {
       defaultHeader.Authorization = `Bearer ${token}`;
     }
-
+    
     return axios.get(url, {headers: {...defaultHeader, ...headers}});
   };
 

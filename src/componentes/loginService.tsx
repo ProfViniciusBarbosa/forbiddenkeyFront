@@ -2,6 +2,8 @@ import axios from 'axios';
 import * as qs from 'qs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from '../assets/mocks/Config';
+import { useState } from 'react';
+
 
 class LoginService {
   static signin = async (data:any) => {
@@ -25,7 +27,10 @@ class LoginService {
         }
       );
       await AsyncStorage.setItem('token', response.data['access_token']);
-      console.log(response)
+      let roleUser = '';
+      response.data.role.map( (role) => (roleUser = role.authority));
+      await AsyncStorage.setItem('tipoUser', roleUser);
+      console.log(roleUser)
       return response.data;
     } catch (e) {
       console.log(JSON.stringify(e));

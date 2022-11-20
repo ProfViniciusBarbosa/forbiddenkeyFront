@@ -2104,6 +2104,11 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
+bignumber.js@^9.0.1:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.0.tgz#8d340146107fe3a6cb8d40699643c302e8773b62"
+  integrity sha512-4LwHK4nfDOraBCtst+wOWIHbu1vhvAPJK8g8nROd4iuc3PSEjWif/qwbkh8jwCJz6yDBvtU4KPynETgrfh7y3A==
+
 bl@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/bl/-/bl-4.1.0.tgz#451535264182bec2fbbc83a62ab98cf11d9f7b3a"
@@ -5923,6 +5928,13 @@ react-native-gradle-plugin@^0.70.3:
   version "0.70.3"
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.70.3.tgz#cbcf0619cbfbddaa9128701aa2d7b4145f9c4fc8"
   integrity sha512-oOanj84fJEXUg9FoEAQomA8ISG+DVIrTZ3qF7m69VQUJyOGYyDZmPqKcjvRku4KXlEH6hWO9i4ACLzNBh8gC0A==
+
+react-native-mask-text@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/react-native-mask-text/-/react-native-mask-text-0.13.1.tgz#d57f25efe869e2ee24c6e92b4aeae576248197ba"
+  integrity sha512-XyCZ6c4n164MWn20XnJzkBMKyKzyaeN19JAyg62dEnielx9VeUNw4vDYyDTUunw8elY1JKtn49PWjjXVPQYJhQ==
+  dependencies:
+    bignumber.js "^9.0.1"
 
 react-native-reanimated@^2.12.0:
   version "2.12.0"

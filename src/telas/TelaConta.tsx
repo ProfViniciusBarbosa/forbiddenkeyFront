@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import axios  from '../componentes/customAxios';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -7,46 +8,168 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  BackHandler,
+  Alert
 } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
-import COR from '../assets/COR';
-import UserPhoto from '../assets/User.png';
+import COR from '../assets/CSS/COR';
+import UserPhoto from '../assets/icons/User.png';
+import Config from '../assets/mocks/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaskedTextInput } from 'react-native-mask-text';
 
-const { width } = Dimensions.get('window');
+const { width , height } = Dimensions.get('window');
 
-export default function TelaConta() {
+export default function TelaConta(props) {
   const [isEditing, setIsEditing] = useState(false);
 
-  // Valores mocados pegar do backend e alterar
-  const [nome, setNome] = useState('Bob');
-  const [sobrenome, setSobrenome] = useState('Jhonsons');
-  const [email, setEmail] = useState('bob@gmail.com');
-  const [telefone, setTelefone] = useState('111234567');
-  const [cpf, setCpf] = useState('123456');
+  const [getUsuario,setGetUsuario] = useState([{}])
+
+  const [nome, setNome] = useState('');
+
+  const [sobrenome, setSobrenome] = useState('');
+
+  const [telefone, setTelefone] = useState('');
+
+  const [dataNascimento,setDataNascimento] = useState('');
+
+  const [cpf, setCpf] = useState('');
+
+  function sairTela (){
+    props.navigation.navigate("Entrar",{logado:"false"});
+    removeItemValue();
+  }
+  async function removeItemValue() {
+    try {
+        await AsyncStorage.removeItem('token');
+        await AsyncStorage.removeItem('tipoUser');
+        await AsyncStorage.setItem("logado","false")
+    }
+    catch(exception) {   
+    }
+}
+
+  async function atulizaInformacoes() {
+    const paramsCUSTOMER = {
+      cpf: cpf,
+      birthDate: dataNascimento,
+      phone: telefone
+    }
+
+    let role = await AsyncStorage.getItem('tipoUser');
+    if(role == "ROLE_CUSTOMER"){
+      try{
+        const response = await axios.put(Config.API_UPDATE_CUSTOMER, paramsCUSTOMER)
+        
+        setGetUsuario(response.data)
+        setNome(getUsuario.firstName)
+        setSobrenome(getUsuario.lastName);
+        setDataNascimento(getUsuario.birthDate)
+        setTelefone(getUsuario.phone)
+        setCpf(getUsuario.cpf)
+
+        console.log(response.data)
+
+        Alert.alert("Sucesso !", "Informações atualizadas com sucesso!", [
+          {
+            text: "OK",
+          },
+        ]);
+      }
+      catch(e){
+        console.log(e.message)
+      }
+    }
+  }
+
+  useEffect(()=>{
+    getDadosUsuario();
+    const backAction = () => {
+      Alert.alert("Calma ae amigão!", "Você realmente deseja sair do app?", [
+        {
+          text: "não",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "Sim", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  },[])
+
+  async function getDadosUsuario () {
+    let role = await AsyncStorage.getItem('tipoUser');
+    if(role == "ROLE_CUSTOMER"){
+      try{
+        const resp = await axios.get(Config.API_PEGA_USER)
+        setGetUsuario(resp.data)
+        setNome(getUsuario.firstName)
+        setSobrenome(getUsuario.lastName);
+        setDataNascimento(getUsuario.birthDate)
+        setTelefone(getUsuario.phone)
+        setCpf(getUsuario.cpf)
+
+      }catch(e){
+        console.log(e)
+      }
+    }
+    else{
+      try{
+        const resp = await axios.get(Config.API_PEGA_ADM)
+        setGetUsuario(resp.data)
+        setNome(getUsuario.firstName)
+        setSobrenome(getUsuario.lastName);
+
+      }catch(e){
+        console.log(e)
+      }
+    }
+      
+  }
 
   return (
+    <ScrollView style={styles.ScrollTela}>
+          
     <View style={styles.center}>
       <View style={styles.viewtitulo}>
-        <Text style={styles.titulo}>Tela Perfil </Text>
+        <Text style={styles.titulo}>Tela Perfil</Text>
       </View>
       <View style={styles.foto}>
         <Image source={UserPhoto} style={{ width: 90, height: 90 }} />
       </View>
       <View style={styles.viewInfo}>
         <View>
-          <Text style={styles.info}>Bob</Text>
+          <Text style={styles.info}>{getUsuario.firstName}</Text>
         </View>
-        <Text style={styles.info}>bob@gmail.com</Text>
+        <Text style={styles.info}>{getUsuario.email}</Text>
       </View>
 
       <View style={styles.linha} />
       <View style={styles.viewDados}>
-        <Text style={styles.label}>Editar dados: </Text>
+        <Text style={styles.label2}>Editar dados:</Text>
         <View style={styles.viewRow}>
-          <Text style={styles.label}>Nome: </Text>
+          <Text style={styles.label}>Nome:</Text>
+          <Text style={styles.label}>{getUsuario.firstName}</Text>
+        </View>
+
+        <View style={styles.viewRow}>
+          <Text style={styles.label}>Sobrenome:</Text>
+          <Text style={styles.label}>{getUsuario.lastName}</Text>
+        </View>
+
+        <View style={styles.viewRow}>
+          <Text style={styles.label}>Nascimento:</Text>
           <TextInput
-            value={nome}
-            onChangeText={value => setNome(value)}
+            value={dataNascimento}
+            onChangeText={value => setDataNascimento(value)}
             autoFocus
             onBlur={() => setIsEditing(false)}
             style={styles.input}
@@ -54,40 +177,19 @@ export default function TelaConta() {
         </View>
 
         <View style={styles.viewRow}>
-          <Text style={styles.label}>Sobrenome: </Text>
-          <TextInput
-            value={sobrenome}
-            onChangeText={value => setSobrenome(value)}
-            autoFocus
-            onBlur={() => setIsEditing(false)}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.viewRow}>
-          <Text style={styles.label}>Telefone: </Text>
-          <TextInput
-            value={email}
-            onChangeText={value => setEmail(value)}
-            autoFocus
-            onBlur={() => setIsEditing(false)}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.viewRow}>
-          <Text style={styles.label}>Telefone: </Text>
+          <Text style={styles.label}>Telefone:</Text>
           <TextInput
             value={telefone}
             onChangeText={value => setTelefone(value)}
             autoFocus
+            
             onBlur={() => setIsEditing(false)}
             style={styles.input}
           />
         </View>
 
         <View style={styles.viewRow}>
-          <Text style={styles.label}>CPF: </Text>
+          <Text style={styles.label}>CPF:</Text>
           <TextInput
             value={cpf}
             onChangeText={value => setCpf(value)}
@@ -95,21 +197,27 @@ export default function TelaConta() {
             onBlur={() => setIsEditing(false)}
             style={styles.input}
           />
-          {/* <Text style={styles.label}>11112222334</Text> */}
         </View>
       </View>
-      <TouchableOpacity style={styles.viewButton}>
+      <TouchableOpacity onPress={()=> atulizaInformacoes()} style={styles.viewButton}>
         <Text style={styles.buttonText}>Salvar</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={()=> sairTela()} style={styles.viewButton2}>
+        <Text style={styles.buttonText}>Sair do Login</Text>
+      </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
   center: {
     flex: 1,
-
     alignItems: 'center',
     textAlign: 'center',
+  },
+  ScrollTela:{
+    height: height,
+    width:width
   },
   viewtitulo: {
     marginVertical: 10,
@@ -140,6 +248,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '200',
     marginLeft: 10,
+    
   },
   linha: {
     width: '100%',
@@ -149,8 +258,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    fontWeight: '200',
+    fontWeight: 'bold',
     paddingRight: 10,
+  },
+  label2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingRight: 10,
+    alignSelf:'center',
   },
   viewRow: {
     width: '95%',
@@ -168,7 +283,7 @@ const styles = StyleSheet.create({
     // width: 200,
     height: 40,
     fontSize: 20,
-    fontWeight: '200',
+    fontWeight: 'bold',
     paddingHorizontal: 18,
     borderWidth: 1,
     borderColor: COR.verdeFosco,
@@ -178,6 +293,15 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
     backgroundColor: COR.verdeFosco,
+    padding: 5,
+    borderRadius: 8,
+  },
+  viewButton2: {
+    width: '80%',
+    alignItems: 'center',
+    backgroundColor: COR.vermelho,
+    marginTop:10,
+    marginBottom:10,
     padding: 5,
     borderRadius: 8,
   },

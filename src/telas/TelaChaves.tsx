@@ -1,11 +1,26 @@
-import React from 'react';
-import { View , StyleSheet , Dimensions, TouchableOpacity , ScrollView , Image, Text} from 'react-native';
+import React, { useEffect } from 'react';
+import { View , StyleSheet , Dimensions, TouchableOpacity , ScrollView , Image, Text, BackHandler} from 'react-native';
 import COR from '../assets/CSS/COR';
 import BarraSuperior from '../componentes/BarraSuperior';
 
 const { width , height} = Dimensions.get('window');
 
 export default function TelaChaves({ navigation }){
+
+    useEffect(() => {
+        const backAction = () => {
+          
+          navigation.goBack()
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+      }, []);
 
     return(
         <View>
