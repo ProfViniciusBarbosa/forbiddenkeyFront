@@ -45,7 +45,7 @@ export default function CardHorizontal(){
           margin: 10,
           height: 200,
           borderRadius: 10,
-          shadowColor: COR.preto,
+          shadowColor: COR.cinza,
           shadowOffset: {
               width: 0,
               height: 7,
@@ -62,7 +62,7 @@ export default function CardHorizontal(){
           margin: 10,
           height: 200,
           borderRadius: 10,
-          shadowColor: COR.preto,
+          shadowColor: COR.cinza,
           shadowOffset: {
               width: 0,
               height: 7,

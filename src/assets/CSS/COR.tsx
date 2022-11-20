@@ -1,11 +1,12 @@
 const COR ={
-    cinza:'grey',
+    cinza:'#757B80',
     vinho:'#77193e',
-    verdeFosco:'#00643a',
-    branco:'#fff',
+    verdeFosco:'#3C647F',
+    branco:'#E9F6FF',
     vermelho:'red',
     preto:'black',
-    marrom:'rgba(61, 43, 31)',
-    azulado:'#009985'
+    marrom:'#8FB3CC',
+    azulado:'#D5EEFF'
 };
+
 export default COR;

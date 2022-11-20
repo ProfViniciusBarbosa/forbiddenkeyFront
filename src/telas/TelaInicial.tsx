@@ -6,7 +6,7 @@ import Config from '../assets/mocks/Config';
 import BarraSuperior from '../componentes/BarraSuperior';
 import CardHorizontal from '../componentes/CardHorizontal';
 
-const { width } = Dimensions.get('window');
+const { width , height} = Dimensions.get('window');
 
 export default function TelaInicial ({ navigation }){
 
@@ -18,7 +18,7 @@ export default function TelaInicial ({ navigation }){
     GetJogos();
   },[refreshing])
 
-     //atualiza as placas
+     //atualiza tela
      const onRefresh = () => {
       setRefreshing(true);
       setTimeout(() => {
@@ -28,8 +28,8 @@ export default function TelaInicial ({ navigation }){
 
     const EnviarDadosTelaJogoENavegar = (idJogo) =>{
       navigation.navigate("Jogo",{idJogo:idJogo,nav:navigation});
-
     }
+
     async function GetJogos(){
       
       try{
@@ -46,8 +46,14 @@ export default function TelaInicial ({ navigation }){
         }
     }
     return (
-      <View style={{backgroundColor:COR.azulado}}>
+      <View style={{backgroundColor:COR.branco}}>
       <BarraSuperior title='Destaques' navigation = {navigation}/>
+      <ScrollView style={{height:height-130,width:width}}
+          decelerationRate={0}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} 
+              onRefresh={onRefresh}/>
+          }>
       <View style={styles.fundoPromocoes}>
         <Text style={styles.textoPromocoes}>
           Promoções
@@ -56,12 +62,12 @@ export default function TelaInicial ({ navigation }){
         <View style={{marginTop:-5}}>
           <CardHorizontal/>
         </View>
-        <ScrollView style={{height:400,width:width}}
-          decelerationRate={0}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} 
-              onRefresh={onRefresh}/>
-          }>
+        <View style={[styles.fundoPromocoes,{marginBottom:10}]}>
+        <Text style={styles.textoPromocoes}>
+          Jogos
+        </Text>
+        </View>
+        
         <View style={{flexDirection:'row',flexWrap:'wrap'}}>
             {
               gamesGet?
@@ -74,11 +80,14 @@ export default function TelaInicial ({ navigation }){
                     <Image style={{width:'100%',height:'100%',borderRadius:8}} source={{uri:game.imgUrl}}/>
                 </View>
                 <Text style={{paddingLeft:8,paddingRight:5,color:COR.branco,fontSize:15}}>{game.name}</Text>
-                <View style={styles.campoPreco}>
-                  <Text style={styles.textoPreco}>{'R$'+game.price}</Text>
+                <View style={{justifyContent:'flex-end'}}>
+                
                 </View>
 
             </TouchableOpacity>
+            <View style={styles.campoPreco}>
+                    <Text style={styles.textoPreco}>{'R$'+game.price}</Text>
+                </View>
             </View>
               ))
               :
@@ -99,7 +108,7 @@ export default function TelaInicial ({ navigation }){
         textAlign: "center",
       },
       container: {
-        height:200,
+        height:230,
         width:((width)/2)-10,
         marginTop:5,
         marginLeft:5,
@@ -110,11 +119,11 @@ export default function TelaInicial ({ navigation }){
     },
     cardFormato:{
         width:(width-30)/2,
-        height:200,
+        height:230,
         alignSelf:'center',
         borderRadius:8,
         backgroundColor:COR.verdeFosco,
-        shadowColor: COR.preto,
+        shadowColor: COR.cinza,
         shadowOffset: {
 	        width: 0,
 	        height: 7,
@@ -125,25 +134,26 @@ export default function TelaInicial ({ navigation }){
 
     },
     LugarImagem:{
-        width:((width-30)/2)-10,
-        height:110,
-        marginLeft:5,
-        marginTop:5,
+        width:((width-30)/2),
+        height:120,
         borderRadius:8,
+        marginBottom:10,
     },
     campoPreco:{
       height:30,
       width:100,
+      marginTop:-40,
       borderRadius:8,
-      alignSelf:'flex-end',
+      justifyContent:'flex-end',
       marginBottom:5,
       marginHorizontal:75,
       alignItems:'center',
-      backgroundColor:COR.vermelho,
+      backgroundColor:COR.branco,
     },
     textoPreco:{
-      color:COR.branco,
-      fontSize:20
+      color:COR.verdeFosco,
+      fontSize:20,
+      fontWeight:'bold',
     },
     textoPromocoes:{
       fontSize:22,

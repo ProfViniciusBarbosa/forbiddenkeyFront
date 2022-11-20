@@ -17,10 +17,10 @@ export default function BarraSuperior(props){
             <Image source={menu} style={{height:30,width:30}}/>
         </TouchableOpacity>
         <Text style={{marginLeft:60,alignSelf:'center',fontSize:25,width:160}}>{props.title}</Text>
-        <TouchableOpacity style={{paddingVertical:15,paddingHorizontal:20,height:35,width:35}} onPress={() => props.navigation.navigate("Catalogo")} >
+        <TouchableOpacity style={{paddingVertical:15,paddingHorizontal:20,height:35,width:35}} onPress={() => props.navigation.navigate("Catalogo",{nav:props.navigation})} >
             <Image source={pesquisa} style={{height:35,width:35}}/>
         </TouchableOpacity>
-        <TouchableOpacity style={{paddingVertical:15,marginLeft:30,height:36,width:37}}>
+        <TouchableOpacity onPress={() => props.navigation.navigate("Carrinho")}  style={{paddingVertical:15,marginLeft:30,height:36,width:37}}>
             <Image source={carrinho} style={{height:36,width:37}}/>
         </TouchableOpacity>
         </View>

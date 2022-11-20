@@ -5,13 +5,18 @@ import olhoFechado from "../assets/icons/olho-2.png";
 import fundoLogin from "../assets/fundo/login.jpg";
 import logo from "../assets/logo/logo.png";
 import COR from '../assets/CSS/COR';
-import axios from 'axios';
+import axios from '../componentes/customAxios';
 import Config from '../assets/mocks/Config';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoginService from '../componentes/loginService';
+
 
 const TelaLogin = ({navigation})=>{
 
-    const [usuarioLogin,setUsuarioLogin] = useState("")
-    const [senhaLogin,setSenhaLogin] = useState("")
+   const [usuarioLogin,setUsuarioLogin] = useState("")
+   
+   const [senhaLogin,setSenhaLogin] = useState("")
      //input ref
    const refInput = useRef();
    //olho
@@ -30,33 +35,15 @@ const TelaLogin = ({navigation})=>{
       }, 1500);
     }else{
       try{
-             const resp = await axios.post(Config.API_LOGA_USER,
-                {
-                  "client_id":"forbiddenkey"
-                , "client_secret":"forbiddenkey123",
-                  "username":usuarioLogin,
-                  "password":senhaLogin,
-                  grant_type:"password"
-                },
+          var params = {
+              client_id: usuarioLogin,
+              client_secret: senhaLogin,
+              grant_type: "client_credentials",
+          }
+             const resp = await LoginService.signin({username:usuarioLogin,password: senhaLogin})
 
-                Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
-             if(resp.data.error == "invalid_grant"){
-
-              setErrou(true)
-                setTimeout(() => {
-                   setErrou(false)
-               }, 1500);
-                
-             }else{
-                //storage
-                // storeData('@idUser',resp.data.role.id)
-                // storeData('@tipeUser',resp.data.role.authority)
-                console.log('aeee')
-                  //  navigation.navigate('CenterHome')
-             }
-             
              }catch(error){
-                console.log(error)
+                
              }
        }
    
@@ -73,7 +60,7 @@ const TelaLogin = ({navigation})=>{
             <View style={{alignSelf:'center',width:200, height:80,backgroundColor:COR.branco,borderRadius:4}}>
             <Image source={logo} style={{alignSelf:'center',width:400, height:200,marginVertical:-70}}/>
             </View>
-        <Text style={{marginTop:25,color:Errou? COR.vermelho:COR.branco,fontWeight:'bold', alignSelf:'center', fontSize:26, textShadowOffset: {width: 3, height: 3},
+        <Text style={{marginTop:25,color:Errou? COR.branco:COR.branco,fontWeight:'bold', alignSelf:'center', fontSize:26, textShadowOffset: {width: 3, height: 3},
     textShadowRadius: 5,
     textShadowColor: COR.vinho}}>Usuário</Text>
             <View style={{ 
@@ -90,7 +77,7 @@ const TelaLogin = ({navigation})=>{
              returnKeyType="next"
              blurOnSubmit={false}
             placeholder="Digite Usuário"
-            placeholderTextColor={Errou? COR.vermelho:COR.cinza}
+            placeholderTextColor={Errou? COR.branco:COR.cinza}
             multiline={false}
             autoComplete={"username"}
             maxLength={35}
@@ -107,7 +94,7 @@ const TelaLogin = ({navigation})=>{
         }}
       />
       </View>
-      <Text style={{color:Errou? COR.vermelho:COR.branco,alignSelf:'center',fontWeight:'bold',fontSize:26, textShadowOffset: {width: 3, height: 3},
+      <Text style={{color:Errou? COR.branco:COR.branco,alignSelf:'center',fontWeight:'bold',fontSize:26, textShadowOffset: {width: 3, height: 3},
     textShadowRadius: 5,
     textShadowColor: COR.vinho}}>Senha</Text>
       <View style={{
@@ -123,7 +110,7 @@ const TelaLogin = ({navigation})=>{
                 returnKeyType="next"
                 blurOnSubmit={false}
                 placeholder="Digite Senha"
-                placeholderTextColor={Errou? COR.vermelho:COR.cinza}
+                placeholderTextColor={Errou? COR.branco:COR.cinza}
                 multiline={false}
                 autoComplete={"password"}
                 maxLength={30}
@@ -170,7 +157,7 @@ const TelaLogin = ({navigation})=>{
           textDecorationLine: 'underline',
           textShadowOffset: {width: 3, height: 3},
           textShadowRadius: 5,
-          textShadowColor: COR.preto
+          textShadowColor: COR.vinho
           }}>Esqueci minha senha...</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => botaoLogin()} style={{alignSelf:'center', marginTop:30,backgroundColor:COR.verdeFosco, width:150, height:40, borderRadius:8}}>
