@@ -8,14 +8,14 @@ import {
   Dimensions,
   Alert,
   BackHandler,
-  KeyboardAvoidView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import COR from '../assets/CSS/COR';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from '../componentes/customAxios';
 import Config from '../assets/mocks/Config';
 
-export default function TelaCartao({route}) {
+export default function TelaCartao(props) {
   
   const [number, setNumber] = useState('');
   
@@ -33,7 +33,7 @@ export default function TelaCartao({route}) {
     
     const backAction = () => {
 
-      route.params.navigation.goBack()
+      props.navigation.goBack()
       return true;
     };
 
@@ -68,7 +68,7 @@ export default function TelaCartao({route}) {
           [
             {
               text: "OK",
-              onPress: () => (route.params.navigation.navigate("Catalogo"))
+              onPress: () => (props.navigation.navigate("Catalogo"))
             },
           ]
         );
@@ -86,7 +86,7 @@ export default function TelaCartao({route}) {
     }
   }
   return (
-    <KeyboardAvoidView style={styles.center}>
+    <KeyboardAvoidingView style={styles.center}>
       <View style={styles.viewtitulo}>
         <Text style={styles.titulo}>Adicionar Cartão </Text>
       </View>
@@ -147,7 +147,7 @@ export default function TelaCartao({route}) {
       <TouchableOpacity onPress={() => addNewCart()} style={styles.viewButton}>
         <Text style={styles.buttonText}>Salvar</Text>
       </TouchableOpacity>
-    </KeyboardAvoidView>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
