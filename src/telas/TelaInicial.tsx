@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../componentes/customAxios';
 import React, { useEffect, useState } from 'react';
 import {Dimensions, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import COR from '../assets/CSS/COR';
@@ -77,7 +77,7 @@ export default function TelaInicial ({ navigation }){
                style={styles.container}>
             <TouchableOpacity key={game.id} style={styles.cardFormato} onPress={()=>EnviarDadosTelaJogoENavegar(game.id)}>
                 <View style={styles.LugarImagem}>
-                    <Image style={{width:'100%',height:'100%',borderRadius:8}} source={{uri:game.imgUrl}}/>
+                    <Image style={{width:'100%',height:'100%'}} source={{uri:game.imgUrl}}/>
                 </View>
                 <Text style={{paddingLeft:8,paddingRight:5,color:COR.branco,fontSize:15}}>{game.name}</Text>
                 <View style={{justifyContent:'flex-end'}}>
@@ -121,7 +121,8 @@ export default function TelaInicial ({ navigation }){
         width:(width-30)/2,
         height:230,
         alignSelf:'center',
-        borderRadius:8,
+        borderBottomLeftRadius:8,
+        borderBottomRightRadius:8,
         backgroundColor:COR.verdeFosco,
         shadowColor: COR.cinza,
         shadowOffset: {

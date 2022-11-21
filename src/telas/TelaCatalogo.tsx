@@ -27,11 +27,11 @@ export default function TelaCatalogo({route}){
         GetCategorias()
         GetDistribuidoras()
         GetDesenvolvedores()
-    },[refreshing])
+    },[])
 
     const [gamesGet,setGamesGet] = useState([{}]);
 
-    const[getCompletoCategorias,setGetCompletoCategorias] = useState([{}])
+    const [getCompletoCategorias,setGetCompletoCategorias] = useState([{}])
 
     const [getCompletoDesenvolvedoras,setGetCompletoDesenvolvedoras] = useState([{}])
 
@@ -176,24 +176,10 @@ export default function TelaCatalogo({route}){
     
       const [Desenvolvedora, setDesenvolvedora] = useState(route.params.desenvolvedora? route.params.desenvolvedora : '');
       const [openDesenvolvedora, setOpenDesenvolvedora] = useState(false);
-    
-      const [refreshing, setRefreshing] = useState(false);
-
-       //atualiza tela
-     const onRefresh = () => {
-        setRefreshing(true);
-        setTimeout(() => {
-          setRefreshing(false);
-        }, 2300);
-      };
 
       return (
         <ScrollView style={{height:height-130,width:width}}
-          decelerationRate={0}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} 
-              onRefresh={onRefresh}/>
-          }>
+          decelerationRate={0}>
         <View style={styles.center}>
           <View style={styles.viewtitulo}>
             <Text style={styles.titulo}>Tela catalogo</Text>

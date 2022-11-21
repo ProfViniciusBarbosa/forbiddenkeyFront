@@ -1,13 +1,22 @@
-import React, { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
 import { View , StyleSheet , Dimensions, TouchableOpacity , ScrollView , Image, Text, BackHandler} from 'react-native';
 import COR from '../assets/CSS/COR';
 import BarraSuperior from '../componentes/BarraSuperior';
+import TelaCadastroJogo from './TelaADMCadastraJogo';
 
 const { width , height} = Dimensions.get('window');
 
 export default function TelaChaves({ navigation }){
+    
+    const [role,setRole] = useState(async () => {
+        const data = await AsyncStorage.getItem('tipoUser')
+        setRole(data || null)
+      }
+    ); 
 
     useEffect(() => {
+
         const backAction = () => {
           
           navigation.goBack()
@@ -23,7 +32,11 @@ export default function TelaChaves({ navigation }){
       }, []);
 
     return(
-        <View>
+        <>
+        {
+            role == "ROLE_CUSTOMER"?
+            
+                <View>
             <BarraSuperior title="Compras" navigation = {navigation} />
 
             <View style={styles.fundoChaves}>
@@ -46,6 +59,11 @@ export default function TelaChaves({ navigation }){
             </ScrollView>
         
         </View>
+            :
+            <TelaCadastroJogo navigation = {navigation} />
+        }
+        </>
+        
     )
     
 }

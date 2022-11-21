@@ -9,6 +9,7 @@ import TelaJogo from '../../telas/TelaJogo';
 import TelaCarinho from '../../telas/TelaCarrinho';
 import TelaCartao from '../../telas/telaCartao';
 import TelaConta from '../../telas/TelaConta';
+import TelaCadastroJogo from '../../telas/TelaADMCadastraJogo';
 
 
 const Stack = createStackNavigator();
@@ -30,6 +31,7 @@ const PrincipalNavegacao = () => {
       <Stack.Screen name="Entrar" component={TelaLogin} />
       <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
       <Stack.Screen name="Conta" component={TelaConta} />
+      <Stack.Screen name="ADMCadastra" component={TelaCadastroJogo} />
 
     </Stack.Navigator>
   );

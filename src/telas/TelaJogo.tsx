@@ -21,62 +21,98 @@ export default function TelaJogo({route}){
 
     const categories = jogoGetById.categories;
 
+    const [cart, setCart] = useState([{}])
+
     const [desenvolvedora,setDesenvolvedor] = useState('');
 
     const [distribuidora,setDistribuidora] = useState('');
 
-    // async function  verificaCart() {
-    //     const responseCart = await axios.get(Config.API_CURRENT_CART)
+    useEffect(() => {
+        GetJogos();
+    
+        const backAction = () => {
+    
+          route.params.nav.goBack()
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+      }, []);
 
-    //     if(responseCart != null){
-            
-    //     }
-    // }
+    async function addItemToCart(idJogo) {
 
-    async function addItemToCart(idJogo){
-     let role = await AsyncStorage.getItem('tipoUser');
-     
-     const responseCart = await axios.get(Config.API_CURRENT_CART)
+        let role = await AsyncStorage.getItem('tipoUser');
 
-     console.log(responseCart.data)
-
-
-    if(role == "ROLE_CUSTOMER"){
-        
         try{
-            await axios.put(Config.API_BASE_URL_CART + idJogo)
-            route.params.nav.navigate('Carrinho')
+            const responseCart = await axios.get(Config.API_BASE_URL_NEW_CART)
+
+            
+            if(responseCart.currentCart == true || role == "ROLE_CUSTOMER"){
+                try{
+                    await axios.put(Config.API_BASE_URL_CART + idJogo)
+
+                    Alert.alert(
+                       "Operação realizada com exito!",
+                      "Item adicionado ao carrinho",
+                        [{
+                           text:"OK",
+                           onPress: () => (route.params.nav.navigate('Carrinho'))
+                      }])
+                }
+             catch(error){
+                   Alert.alert(
+                      "Erro, operação não concluida!",
+                      "Erro: " + error,
+                      [{
+                          text: "OK",
+                         onPress: () => (route.params.nav.navigate('Catalogo'))
+                     }]
+                    )
+                }     
+            }
+        else{
+            Alert.alert(
+                "Erro, operação não concluida!",
+                "Nescessario faze login para processeguir",
+                [{
+                    text: "OK",
+                    onPress: () => (route.params.nav.navigate('Catalogo'))
+                }]
+            )
         }
-        catch(error){console.log(error)}
-    }else{
-        Alert.alert(
-            "Necessário login",
-            "Para adicionar itens ao seu carrinho, faça login!",
-            [
-              {
+    }catch(error){
+        
+        if(role == "ROLE_CUSTOMER"){
+               
+            await axios.post(Config.API_BASE_URL_CART + idJogo)
+
+            Alert.alert(
+              "Operação realizada com exito!",
+             "Item adicionado ao carrinho",
+                [{
+                    text: "OK",
+                    onPress: () => (route.params.nav.navigate('Carrinho'))
+                 }])
+        }
+        else{
+            
+            Alert.alert(
+             "Erro, operação não concluida!",
+             "Erro: " + error,
+             [{
                 text: "OK",
-                onPress: () => (route.params.nav.navigate('Entrar'))
-              },
-            ]
-          );
+                onPress: () => (route.params.nav.navigate('Catalogo'))
+            }]
+             )
+        }
+
     }
-}
-useEffect(() => {
-    GetJogos();
-
-    const backAction = () => {
-
-      route.params.nav.goBack()
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
+    }
 
     async function GetJogos(){
       

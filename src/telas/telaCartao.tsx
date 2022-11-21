@@ -8,13 +8,14 @@ import {
   Dimensions,
   Alert,
   BackHandler,
+  KeyboardAvoidView,
 } from 'react-native';
 import COR from '../assets/CSS/COR';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from '../componentes/customAxios';
 import Config from '../assets/mocks/Config';
 
-export default function TelaCartao({navigation}) {
+export default function TelaCartao({route}) {
   
   const [number, setNumber] = useState('');
   
@@ -28,23 +29,23 @@ export default function TelaCartao({navigation}) {
   
   const [holderCpf, setHolderCpf] = useState('');
 
-  async function addNewCart() {
+  useEffect(() => {
+    
+    const backAction = () => {
 
-    useEffect(() => {
-    
-        const backAction = () => {
-    
-          navigation.goBack()
-          return true;
-        };
-    
-        const backHandler = BackHandler.addEventListener(
-          "hardwareBackPress",
-          backAction
-        );
-    
-        return () => backHandler.remove();
-      }, []);
+      route.params.navigation.goBack()
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  async function addNewCart() {
 
     let role = await AsyncStorage.getItem('tipoUser');
 
@@ -59,25 +60,20 @@ export default function TelaCartao({navigation}) {
 
     if(role == "ROLE_CUSTOMER"){
       console.log(params)
-
-      try{
         const response  = await axios.post(Config.API_BASE_URL_NEW_CART, params)
   
-          Alert.alert(
-            "Cartão criado com sucesso !",
-            "Você já pode uso para realizar as suas compras!",
-            [
-              {
-                text: "OK",
-                onPress: () => (navigation.navigate("Catalogo"))
-              },
-            ]
-          );
-        }catch(error){
-          console.log(error)
-        }
-    }
-    else{
+        Alert.alert(
+          "Cartão criado com sucesso !",
+          "Você já pode uso para realizar as suas compras!",
+          [
+            {
+              text: "OK",
+              onPress: () => (route.params.navigation.navigate("Catalogo"))
+            },
+          ]
+        );
+      }
+      else{
       Alert.alert(
         "Erro ao adicionar o novo cartão !",
         "Verifique as informações passada e tente novamente!",
@@ -89,9 +85,8 @@ export default function TelaCartao({navigation}) {
       );
     }
   }
-  
   return (
-    <View style={styles.center}>
+    <KeyboardAvoidView style={styles.center}>
       <View style={styles.viewtitulo}>
         <Text style={styles.titulo}>Adicionar Cartão </Text>
       </View>
@@ -146,13 +141,13 @@ export default function TelaCartao({navigation}) {
           placeholder="xxx xxx xxx xx"
           style={styles.input}
           keyboardType="numeric"
-          maxLength={1}
+          maxLength={11}
         />
       </View>
-      <TouchableOpacity onPress={() => addNewCart()} onstyle={styles.viewButton}>
+      <TouchableOpacity onPress={() => addNewCart()} style={styles.viewButton}>
         <Text style={styles.buttonText}>Salvar</Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidView>
   );
 }
 const styles = StyleSheet.create({

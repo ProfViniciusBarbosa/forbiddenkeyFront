@@ -9,6 +9,7 @@ import {
   Dimensions,
   Alert,
   BackHandler,
+  ScrollView,
 } from 'react-native';
 
 import RadioForm, {
@@ -150,45 +151,19 @@ export default function TelaCart({navigation}) {
     }
   }
 
-  // async function GetCards() {
-  //   try{
-  //     const response = await axios.get(Config.API_BASE_URL_CARD)
-
-  //     if(response != null){
-  //       setCard(response.data.content);
-  //     }
-  //     else{
-  //       Alert.alert(
-  //         "Vazio, nenhum cartão cadastrado!",
-  //         "Deseja cadastar um novo ?!",
-  //         [
-  //           {
-  //             text: "sim",
-  //             onPress: () => (navigation.navigate(""))
-  //           },
-
-  //           {
-  //             text: "não",
-  //             onPress: () => (navigation.navigate(""))
-  //           },
-  //         ]
-  //       );
-  //     }
-  //   }
-  //   catch(error){
-  //     console.log(error)
-  //   }
-  // }
-
   return (
-    <View style={styles.center}>
+    <ScrollView style={styles.center}>
+      <View style={{alignItems: 'center',marginBottom:20}}>
       <View style={styles.viewtitulo}>
         <Text style={styles.titulo}> Carrinho </Text>
       </View>
 
+{
+  console.log(currentCart)
+}
       {
-        currentCart?
-        currentCart.map((jogo,key)=>(
+        currentCart.products?
+        currentCart.products.map((jogo,key)=>(
           <View key={key} style={styles.cardFormato}>
           <Image
             source={{
@@ -217,7 +192,7 @@ export default function TelaCart({navigation}) {
       <View style={styles.viewRow}>
         <Text style={styles.Total}>TOTAL</Text>
 
-        <Text style={styles.Total}>{currentCart.totalValue}</Text>
+        <Text style={styles.Total}></Text>
       </View> 
 
       <View style={styles.linha} />
@@ -242,7 +217,7 @@ export default function TelaCart({navigation}) {
         <Text>Cartao final 1234</Text>
       </TouchableOpacity> */}
 
-      <TouchableOpacity style={styles.viewRemover}>
+      <TouchableOpacity onPress={() =>navigation.navigate("Cartao",{navigation:navigation})} style={styles.viewRemover}>
         <Text style={styles.Remover}>Adicionar cartão</Text>
       </TouchableOpacity>
 
@@ -251,14 +226,14 @@ export default function TelaCart({navigation}) {
       <TouchableOpacity style={styles.viewComprar}>
         <Text style={styles.Comprar}>Finalizar compra</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
   center: {
     flex: 1,
     // justifyContent: 'center',
-    alignItems: 'center',
     textAlign: 'center',
   },
   viewtitulo: {

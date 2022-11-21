@@ -37,8 +37,8 @@ export default function TelaConta(props) {
   const [cpf, setCpf] = useState('');
 
   function sairTela (){
-    props.navigation.navigate("Entrar",{logado:"false"});
     removeItemValue();
+    props.navigation.navigate("Entrar",{logado:"false"});
   }
   async function removeItemValue() {
     try {
