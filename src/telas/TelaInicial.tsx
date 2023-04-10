@@ -1,4 +1,4 @@
-import axios from '../componentes/customAxios';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {Dimensions, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import COR from '../assets/CSS/COR';
@@ -13,6 +13,8 @@ export default function TelaInicial ({ navigation }){
   const [refreshing, setRefreshing] = useState(false);
 
   const [gamesGet,setGamesGet] = useState([{}]);
+
+  // const [princGames, setprincGames] = useState([{}]);
 
   useEffect(()=>{
     GetJogos();
@@ -30,20 +32,13 @@ export default function TelaInicial ({ navigation }){
       navigation.navigate("Jogo",{idJogo:idJogo,nav:navigation});
     }
 
-    async function GetJogos(){
-      
-      try{
-        const resp = await axios.get(Config.API_PEGA_JOGOS,
-         Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
-
-         if(resp != null){
-          setGamesGet(resp.data.content)
-         }
-      }
-        catch (e)
-        {
-          console.log(e)
-        }
+    function GetJogos(){
+      axios.get(Config.API_PEGA_JOGOS,
+        Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>
+         setGamesGet(resp.data.content)
+        ).catch((e)=>{
+         console.log(e)
+        })
     }
     return (
       <View style={{backgroundColor:COR.branco}}>

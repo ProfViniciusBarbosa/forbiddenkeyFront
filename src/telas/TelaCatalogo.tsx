@@ -12,23 +12,15 @@ import {
 } from 'react-native';
 
 import DropDownPicker from 'react-native-dropdown-picker';
-import { RefreshControl } from 'react-native-gesture-handler';
 import COR from '../assets/CSS/COR';
 
 import SearchImg from '../assets/icons/lupinha.png';
+import RemoveImg from '../assets/icons/remover.png';
 import Config from '../assets/mocks/Config';
 
 const { width , height} = Dimensions.get('window');
 
 export default function TelaCatalogo({route}){
-
-    useEffect(()=>{
-        GetJogos()
-        GetCategorias()
-        GetDistribuidoras()
-        GetDesenvolvedores()
-    },[])
-
     const [gamesGet,setGamesGet] = useState([{}]);
 
     const [getCompletoCategorias,setGetCompletoCategorias] = useState([{}])
@@ -37,116 +29,7 @@ export default function TelaCatalogo({route}){
 
     const [getCompletoDistribuidoras,setGetCompletoDistribuidoras] = useState([{}])
 
-    async function GetJogos(){
-      
-        try{
-          const resp = await axios.get(Config.API_PEGA_JOGOS,
-           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
-  
-           if(resp != null){
-            setGamesGet(resp.data.content)
-           }
-        }
-          catch (e)
-          {
-            console.log(e)
-          }
-      }
-
-      async function GetCategorias(){
-      
-        try{
-          const resp = await axios.get(Config.API_PEGA_FILTROS,
-           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
-  
-           if(resp != null && resp != undefined){
-            setGetCompletoCategorias(resp.data.content)
-
-            let newArray = [];
-
-            var quantidadeChaves = Object.keys(getCompletoCategorias).length
-
-            for(var i = 0; i < quantidadeChaves; i++){
-                console.log(getCompletoCategorias[i].name)
-
-                newArray.push({
-                    label: getCompletoCategorias[i].name,
-                    value: getCompletoCategorias[i].id,
-                })
-            }
-                setItensCategoria(newArray)
-            }
-            
-        }
-          catch (e)
-          {
-            console.log(e)
-          }
-      }
-
-      async function GetDistribuidoras(){
-      
-        try{
-          const resp = await axios.get(Config.API_PEGA_DISTRIBUIDORAS,
-           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
-  
-           if(resp != null && resp != undefined){
-            setGetCompletoDistribuidoras(resp.data.content)
-
-            let newArray = [];
-
-            var quantidadeChaves = Object.keys(getCompletoDistribuidoras).length
-
-            for(var i = 0; i < quantidadeChaves; i++){
-                console.log(getCompletoDesenvolvedoras[i].name)
-
-                newArray.push({
-                    label: getCompletoDistribuidoras[i].name,
-                    value: getCompletoDistribuidoras[i].id,
-                })
-            }
-                setItensDistribuidora(newArray)
-            }
-            
-        }
-          catch (e)
-          {
-            console.log(e)
-          }
-      }
-      
-      async function GetDesenvolvedores(){
-      
-        try{
-          const resp = await axios.get(Config.API_PEGA_DESENVOLVEDORES,
-           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
-  
-           if(resp != null && resp != undefined){
-            setGetCompletoDesenvolvedoras(resp.data.content)
-
-            let newArray = [];
-
-            var quantidadeChaves = Object.keys(getCompletoDesenvolvedoras).length
-
-            for(var i = 0; i < quantidadeChaves; i++){
-                console.log(getCompletoDesenvolvedoras[i].name)
-
-                newArray.push({
-                    label: getCompletoDesenvolvedoras[i].name,
-                    value: getCompletoDesenvolvedoras[i].id,
-                })
-            }
-                setItensDesenvolvedora(newArray)
-            }
-            
-        }
-          catch (e)
-          {
-            console.log(e)
-          }
-      }
-
-      const [itensCategoria, setItensCategoria] = useState([]);
+    const [itensCategoria, setItensCategoria] = useState([]);
 
       const [itensDistribuidora, setItensDistribuidora] = useState([]);
     
@@ -177,6 +60,105 @@ export default function TelaCatalogo({route}){
       const [Desenvolvedora, setDesenvolvedora] = useState(route.params.desenvolvedora? route.params.desenvolvedora : '');
       const [openDesenvolvedora, setOpenDesenvolvedora] = useState(false);
 
+    useEffect(()=>{
+        GetJogos()
+        GetCategorias()
+        GetDistribuidoras()
+        GetDesenvolvedores()
+        
+    },[])
+
+    useEffect(()=>{
+      if(Object.keys(getCompletoCategorias).length > 1){
+  
+        let newArray = [];
+
+        const quantidadeChaves = Object.keys(getCompletoCategorias).length
+  
+        for(var i = 0; i < quantidadeChaves; i++){
+            newArray.push({
+                label: getCompletoCategorias[i].name,
+                value: getCompletoCategorias[i].id,
+            })}
+            setItensCategoria(newArray)
+        }
+            
+      },[getCompletoCategorias])
+
+      useEffect(()=>{
+        if(Object.keys(getCompletoDistribuidoras).length > 1){
+        
+          let newArray = [];
+
+          var quantidadeChaves = Object.keys(getCompletoDistribuidoras).length
+
+          for(var i = 0; i < quantidadeChaves; i++){
+              newArray.push({
+                  label: getCompletoDistribuidoras[i].name,
+                  value: getCompletoDistribuidoras[i].id,
+              })
+          }
+              setItensDistribuidora(newArray)
+          }
+      },[getCompletoDistribuidoras])
+
+      useEffect(()=>{
+        if(Object.keys(getCompletoDesenvolvedoras).length > 1){
+          let newArray = [];
+
+          var quantidadeChaves = Object.keys(getCompletoDesenvolvedoras).length
+
+          for(var i = 0; i < quantidadeChaves; i++){
+              newArray.push({
+                  label: getCompletoDesenvolvedoras[i].name,
+                  value: getCompletoDesenvolvedoras[i].id,
+              })
+          }
+              setItensDesenvolvedora(newArray)
+        }
+      },[getCompletoDesenvolvedoras])
+
+      function GetJogos(){
+      
+          axios.get(Config.API_PEGA_JOGOS,
+           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>
+            setGamesGet(resp.data.content)
+           ).catch((e)=>{
+            console.log(e)
+           })
+      }
+
+      function GetCategorias(){
+
+          axios.get(Config.API_PEGA_FILTROS,
+           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
+              setGetCompletoCategorias(resp.data.content)
+           }).catch ((e)=>
+          {
+            console.log(e)
+          }
+           )
+        }
+
+      function GetDistribuidoras(){
+          axios.get(Config.API_PEGA_DISTRIBUIDORAS,
+          Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
+            setGetCompletoDistribuidoras(resp.data.content)
+           }).catch ((e)=>
+          {
+            console.log(e)
+          })
+        }
+      
+      function GetDesenvolvedores(){
+        axios.get(Config.API_PEGA_DESENVOLVEDORES,
+        Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
+
+            setGetCompletoDesenvolvedoras(resp.data.content)
+
+        })}
+
+      
       return (
         <ScrollView style={{height:height-130,width:width}}
           decelerationRate={0}>
@@ -188,10 +170,19 @@ export default function TelaCatalogo({route}){
             <TouchableOpacity style={styles.icon}>
               <Image source={SearchImg} />
             </TouchableOpacity>
+            
             <TextInput
               style={{ width: '100%', height: 48 }}
               placeholder="Pesquisar"
             />
+            <TouchableOpacity onPress={() =>{
+              setCategoria('')
+              setDistribuidora('')
+              setDesenvolvedora('')
+              setPreco('')
+            }} style={{marginHorizontal:-20}}>
+              <Image source={RemoveImg} />
+            </TouchableOpacity>
           </View>
           <View style={styles.viewRow}>
             <View style={styles.select}>
@@ -255,23 +246,203 @@ export default function TelaCatalogo({route}){
           {
             gamesGet?
             gamesGet.filter((game) =>{
-                if(categoria != ''){
-                    for (let i = 0;i< Object.keys(game.categories).length;i++){
-                        console.log(categoria)
-                        if(game.categories[i].name == categoria){
-                            
+              if(categoria != '')
+              {
+                if(Desenvolvedora != '' || distribuidora != '' || preco != '')
+                {
+                  for(let i = 0;i< Object.keys(game.categories).length;i++)
+                  {    
+                    if(game.categories[i].name == itensCategoria[categoria-1].label)
+                    {      
+                      if(Desenvolvedora != '' && distribuidora == '' && preco == '')
+                      {
+                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                        {
+                          if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                          {
                             return game
+                          }
                         }
+                      }
+                      
+                      else if(Desenvolvedora != '' && distribuidora != '' && preco == '')
+                      {
+                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                        {
+                          if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                          {
+                            for (let i = 0;i< Object.keys(game.distributorDTO).length;i++)
+                            {
+                              if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
+                              {
+                                return game
+                              }
+                            }
+                          }
+                        }
+                      }
+                      
+                      else if(Desenvolvedora != '' && distribuidora == '' && preco != '')
+                      {
+                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                        {
+                          if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                          {
+                            console.log(game.price)
+                            
+                            console.log(itensPreco[preco-1])
+    
+                            if(itensPreco[preco-1].value == 1 && game.price <=20){
+                              return game
+                            }
+                            else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                              return game
+                            }
+                            else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                              return game
+                            }    
+                          }
+                        }
+                      }
                     }
-                    
+                  }
                 }
-                else if (categoria ==''){
-                    return game
+                
+                else
+                {
+                  for(let i = 0;i< Object.keys(game.categories).length;i++)
+                  {    
+                    if(game.categories[i].name == itensCategoria[categoria-1].label)
+                    {      
+                      return game
+                    }
+                  }
                 }
+              }
+              
+              //Condições com Desenvolvedora para pesquisa
+              else if (categoria =='' && Desenvolvedora != '')
+              {
+                if(distribuidora != '' || preco != '')
+                {
+                  if(distribuidora != '' && preco != '')
+                  {
+                    for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                    {
+                      if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                      {
+                        return game
+                      }
 
+                      if(itensPreco[preco-1].value == 1 && game.price <=20)
+                      {
+                        return game
+                      }
+
+                      else if(itensPreco[preco-1].value == 2 && game.price <=50)
+                      {
+                        return game
+                      }
+
+                      else if(itensPreco[preco-1].value == 3 && game.price <=100)
+                      {
+                        return game
+                      }    
+                    }
+                  } 
+                           
+                  else if(distribuidora != '' && preco == ''){
+                    for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                    {
+                      if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                      {
+                        return game
+                      }
+                    }
+                  } 
+
+                  else if(distribuidora == '' && preco != ''){
+                    for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                    {
+                      if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                      {
+                        return game
+                      }
+                    }
+                  }
+                }
+                  
+                else
+                {
+                  for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                  {
+                    if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                    {  
+                      return game
+                    }
+                  }
+                }
+              }
+              // Fim condições com Desenvolvedora para pesquisa
+              
+              // Condições com Distribuidora para pesquisa
+              else if(categoria =='' && Desenvolvedora == '' && distribuidora != '')
+              {
+                if(categoria != '' || Desenvolvedora != '' || preco != '')
+                {
+                  if(categoria != '' && Desenvolvedora == '' && preco == '')
+                  {
+                    for(let i = 0;i< Object.keys(game.categories).length;i++)
+                    {
+                      if(game.categories[i].name == itensCategoria[categoria-1].label)
+                      {
+                        return game
+                      }
+                    }
+                  }
+      
+                  else if(categoria != '' && Desenvolvedora != '' && preco == '')
+                  {
+                    for (let i = 0;i< Object.keys(game.categories).length;i++)
+                    {
+                      if(game.categories.name == itensCategoria[categoria-1].label)
+                      {
+                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                        {
+                          if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
+                          {
+                            return game
+                          }
+                        }
+                      }
+                    }
+                  }  
+                      else{
+                        for(let i = 0;i< Object.keys(game.categories).length;i++)
+                        {
+                         if(game.categories[i].name == itensCategoria[categoria-1].label)
+                         {  
+                          return game
+                         }
+                        }
+                     }
+                    }
+                  }
+                  // Fim condições com Distribuidoras para pesquisa
+
+                  //Condições de Preço preenchidas
+                  
+                  //Fecha condções de preço
+                  
+                  // Caso nenhuma das condições estiver preenchidas
+                  else if (categoria == '' && Desenvolvedora == '' && distribuidora == '' && preco == '')
+                  {
+                    return game
+                  }
+                  // Fim caso nenhuma das condições estiver preenchidas
             }).map((game,key)=>(
                 
-                      <View key={key} style={styles.cardFormato}>
+                      <View key={key? key : 0} style={styles.cardFormato}>
                         <TouchableOpacity onPress={()=>EnviarDadosTelaJogoENavegar(game.id)}>
                           <Image
                             source={{uri:game.imgUrl}}
@@ -315,9 +486,9 @@ export default function TelaCatalogo({route}){
       },
       pesquisa: {
         width: '80%',
+        marginLeft:-60,
         borderWidth: 1,
         borderColor: COR.cinza,
-    
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 10,

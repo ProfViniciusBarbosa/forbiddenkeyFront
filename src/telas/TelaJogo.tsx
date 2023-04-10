@@ -1,4 +1,4 @@
-import axios from '../componentes/customAxios';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Text, View ,StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity, Alert,BackHandler} from 'react-native';
 import COR from '../assets/CSS/COR';
@@ -48,56 +48,59 @@ export default function TelaJogo({route}){
 
         let role = await AsyncStorage.getItem('tipoUser');
 
-        try{
-            const responseCart = await axios.get(Config.API_BASE_URL_NEW_CART)
+       axios.get(Config.API_BASE_URL_NEW_CART).then((responseCart)=>{
+
+
+        if(responseCart.currentCart == true && role == "ROLE_CUSTOMER"){
+            axios.put(Config.API_BASE_URL_CART + idJogo).then(()=>
+                 Alert.alert(
+                   "Operação realizada com exito!",
+                  "Item adicionado ao carrinho",
+                    [{
+                       text:"OK",
+                       onPress: () => (route.params.nav.navigate('Carrinho'))
+                  }])
+
+
+            ).catch((error)=>Alert.alert(
+                  "Erro, operação não concluida!",
+                  "Erro: " + error,
+                  [{
+                      text: "OK",
+                     onPress: () => (route.params.nav.navigate('Catalogo'))
+                 }]
+                ))
+        }
+    else{
+        Alert.alert(
+            "Error! Cadastro nescessario para concluir ação ",
+            "Nescessario faze login para processeguir",
+            [{
+                text: "OK",
+                onPress: () => (route.params.nav.navigate('Catalogo'))
+            }]
+        )
+    }
+
+       })
 
             
-            if(responseCart.currentCart == true || role == "ROLE_CUSTOMER"){
-                try{
-                    await axios.put(Config.API_BASE_URL_CART + idJogo)
-
-                    Alert.alert(
-                       "Operação realizada com exito!",
-                      "Item adicionado ao carrinho",
-                        [{
-                           text:"OK",
-                           onPress: () => (route.params.nav.navigate('Carrinho'))
-                      }])
-                }
-             catch(error){
-                   Alert.alert(
-                      "Erro, operação não concluida!",
-                      "Erro: " + error,
-                      [{
-                          text: "OK",
-                         onPress: () => (route.params.nav.navigate('Catalogo'))
-                     }]
-                    )
-                }     
-            }
-        else{
-            Alert.alert(
-                "Erro, operação não concluida!",
-                "Nescessario faze login para processeguir",
-                [{
-                    text: "OK",
-                    onPress: () => (route.params.nav.navigate('Catalogo'))
-                }]
-            )
-        }
-    }catch(error){
+           
+    .catch((error)=>{
         
         if(role == "ROLE_CUSTOMER"){
                
-            await axios.post(Config.API_BASE_URL_CART + idJogo)
-
-            Alert.alert(
+           axios.post(Config.API_BASE_URL_CART + idJogo).then(()=>
+               Alert.alert(
               "Operação realizada com exito!",
              "Item adicionado ao carrinho",
                 [{
                     text: "OK",
                     onPress: () => (route.params.nav.navigate('Carrinho'))
                  }])
+           )
+
+         
         }
         else{
             
@@ -110,28 +113,28 @@ export default function TelaJogo({route}){
             }]
              )
         }
-
     }
+    )
     }
 
-    async function GetJogos(){
+    function GetJogos(){
       
-        try{
-          const resp = await axios.get(Config.API_PEGA_JOGUINHO+route.params.idJogo,
-           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
-  
-           if(resp != null){
+        axios.get(Config.API_PEGA_JOGUINHO+route.params.idJogo,
+           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
+
+            if(resp != null){
             console.log(resp.data)
             setJogoGetById(resp.data)
             setDesenvolvedor(resp.data.developerDTO.name)
             setDistribuidora(resp.data.distributorDTO.name)
 
+
            }
-        }
-          catch (e)
-          {
+            
+           }
+           ).catch ((e)=>{
             console.log(e)
-          }
+          })
       }
 
     return(

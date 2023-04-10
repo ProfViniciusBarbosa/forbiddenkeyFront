@@ -54,12 +54,9 @@ export default function TelaCart({navigation}) {
   
   const [itensCard, setItensCard] = useState([]);
   
-  async function GetCartoes(){
-      
-    try{
-      const resp = await axios.get(Config.API_BASE_URL_CARD)
-
-       if(resp != null && resp != undefined){
+  function GetCartoes(){
+    axios.get(Config.API_BASE_URL_CARD).then((resp)=>{
+      if(resp != null && resp != undefined){
         setCard(resp.data)
 
         let newArray = [];
@@ -67,88 +64,72 @@ export default function TelaCart({navigation}) {
         var quantidadeChaves = Object.keys(card).length
 
         for(var i = 0; i < quantidadeChaves; i++){
-
-            newArray.push({
-                label: card[i].bannerDTO.name,
-                value: card[i].id,
-            })
+          newArray.push({
+            label: card[i].bannerDTO.name,
+            value: card[i].id,
+          })
 
             setItensCard(newArray)
         }
-        }
-        
-    }
-      catch (e)
-      {
-        console.log(e)
-      }
+        }  
+    })     
   }
 
 
   async function GetCurrentCart(){
     let role = await AsyncStorage.getItem('tipoUser');
     if(role == "ROLE_CUSTOMER"){
-      try{
-        const response  = await axios.get(Config.API_CURRENT_CART)
-
-        console.log(response.data)
-
-        if(response != null){
-          setCurrentCart(response.data)
-        }
-        else{
-          Alert.alert(
-            "Carrinho vazio !",
-            "Adicione itens ao seu carrinho, para vizualizar !",
-            [
-              {
-                text: "OK",
-              },
-            ]
-          );
-        }
+        axios.get(Config.API_CURRENT_CART).then((resp)=>{
+          if(resp != null){
+          setCurrentCart(resp.data)
+          }
+          else{
+            Alert.alert(
+              "Carrinho vazio !",
+              "Adicione itens ao seu carrinho, para vizualizar !",
+              [
+                {
+                  text: "OK",
+               },
+             ]
+            );
+          }})
+   
+      }else{
+        Alert.alert(
+          "Não é possivel adicionar ou vizualizar itens do carrinho !",
+          "Logue na aplicação para vizualizar e adiconar itens ao carrinho!",
+          [
+            {
+              text: "OK",
+              onPress: () => (navigation.navigate("Entrar"))
+            },
+          ]
+        );
       }
-        catch (erros)
-        {
-          console.log(erros)
-        }
     }
-    else{
-      Alert.alert(
-        "Não é possivel adicionar ou vizualizar itens do carrinho !",
-        "Logue na aplicação para vizualizar e adiconar itens ao carrinho!",
-        [
-          {
-            text: "OK",
-            onPress: () => (navigation.navigate("Entrar"))
-          },
-        ]
-      );
-    }
-  }
 
-  async function removeItemByCart(idItem) {
-    try{
-      const response = await axios.delete(Config.API_BASE_URL_CART + idItem)
-      Alert.alert('Item removido',
-      'Operção feita com sucesso',[
-        {
-          text:"OK"
-        },
-      ]);
-    }
-    catch(error){
-
-      Alert.alert(
-        "Error!" + error,
-        "Não foi possivel remover item do carrinho!",
-        [
-          {
-            text: "OK",
+  function removeItemByCart(idItem) {
+    axios.delete(Config.API_BASE_URL_CART + idItem).then((resp)=>{
+      try{
+        Alert.alert('Item removido',
+        'Operção feita com sucesso',[
+         {
+           text:"OK"
           },
-        ]
-      );
-    }
+        ]);
+      }catch(error){
+        Alert.alert(
+          "Error!" + error,
+          "Não foi possivel remover item do carrinho!",
+          [
+            {
+              text: "OK",
+            },
+          ]
+        );
+      }
+    })  
   }
 
   return (
@@ -192,7 +173,7 @@ export default function TelaCart({navigation}) {
       <View style={styles.viewRow}>
         <Text style={styles.Total}>TOTAL</Text>
 
-        <Text style={styles.Total}></Text>
+        <Text style={styles.Total}>{currentCart.totalValue}</Text>
       </View> 
 
       <View style={styles.linha} />
