@@ -28,6 +28,23 @@ const TelaLogin = (props)=>{
 
    const [logado,setLogado] = useState("false");
    
+   useEffect(()=>{
+
+    async function FuncaoVeLogin() {
+       const situacaoLogin = await AsyncStorage.getItem("logado")
+       console.log(situacaoLogin
+        )
+        
+       if(situacaoLogin == undefined || situacaoLogin == "false"){
+        setLogado("false");
+       }else{
+        setLogado("true");
+       }
+    }
+    FuncaoVeLogin();
+   
+   },[])
+
    useEffect(() => {
     const backAction = () => {
       Alert.alert("Calma ae amigão!", "Você realmente deseja sair do app?", [
@@ -72,11 +89,29 @@ const TelaLogin = (props)=>{
                 await AsyncStorage.setItem("logado","true")
                 setLogado("true");
 
+                Alert.alert(
+                  "Bem vindo !!", 
+                  "É muito bom te ter de volta mais uma vez", 
+                  [
+                    {
+                      text: "Continuar", 
+                    },
+                  ]
+                );
               }
               
-             }catch(error){
-                
              }
+             catch(error)
+             {
+                Alert.alert(
+                  "Algo deu errado !!!",
+                  "Não foi possivel logar, tente novamente",
+                  [
+                    {
+                    text: "OK",
+                    }
+                  ])
+              }
        }
        
 }
@@ -206,7 +241,7 @@ const TelaLogin = (props)=>{
         </KeyboardAvoidingView>
         </ImageBackground>
         :
-        <TelaConta navigation = {props.navigation}/>
+        <TelaConta navigation = {props.navigation} setLogado = {setLogado} passwordUser={senhaLogin}/>
       }
       </>
     )

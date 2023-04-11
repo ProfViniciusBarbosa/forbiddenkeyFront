@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   Dimensions,
   BackHandler,
-  Alert
+  Alert,
+  ScrollView ,
 } from 'react-native';
-import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
 import COR from '../assets/CSS/COR';
 import UserPhoto from '../assets/icons/User.png';
@@ -22,6 +22,7 @@ import { MaskedTextInput } from 'react-native-mask-text';
 const { width , height } = Dimensions.get('window');
 
 export default function TelaConta(props) {
+  
   const [isEditing, setIsEditing] = useState(false);
 
   const [getUsuario,setGetUsuario] = useState([{}])
@@ -38,62 +39,82 @@ export default function TelaConta(props) {
 
   function sairTela (){
     removeItemValue();
-    props.navigation.navigate("Entrar",{logado:"false"});
+    props.setLogado("false");
+
   }
   async function removeItemValue() {
     try {
         await AsyncStorage.removeItem('token');
         await AsyncStorage.removeItem('tipoUser');
-        await AsyncStorage.setItem("logado","false")
+        await AsyncStorage.setItem("logado","false");
+        
     }
     catch(exception) {   
     }
 }
 
   async function atulizaInformacoes() {
+
     const paramsCUSTOMER = {
-      cpf: cpf,
-      birthDate: dataNascimento,
-      phone: telefone
+      cpf : cpf,
+      birthDate : dataNascimento,
+      phone : telefone,
+      firstName: nome,
+		  lastName : sobrenome,
+		  email : getUsuario.email,
+		  password : props.passwordUser,
     }
 
     let role = await AsyncStorage.getItem('tipoUser');
+    
     if(role == "ROLE_CUSTOMER"){
-      try{
-        const response = await axios.put(Config.API_UPDATE_CUSTOMER, paramsCUSTOMER)
-        
-        setGetUsuario(response.data)
-        setNome(getUsuario.firstName)
-        setSobrenome(getUsuario.lastName);
-        setDataNascimento(getUsuario.birthDate)
-        setTelefone(getUsuario.phone)
-        setCpf(getUsuario.cpf)
-
+      axios.put(Config.API_UPDATE_CUSTOMER, paramsCUSTOMER).then((response) => {        
         console.log(response.data)
-
-        Alert.alert("Sucesso !", "Informações atualizadas com sucesso!", [
-          {
-            text: "OK",
-          },
-        ]);
-      }
-      catch(e){
-        console.log(e.message)
-      }
+        
+        setGetUsuario(response.data);
+        setNome(response.data.firstName);
+        setSobrenome(response.data.lastName);
+        setDataNascimento(response.data.birthDate);
+        setTelefone(response.data.phone);
+        setCpf(response.data.cpf);
+  
+        Alert.alert(
+          "Ação concluida!!",
+          "Informações atualizadas com sucesso !!", 
+          [
+            {
+               text: "OK",
+            },
+          ]
+        );
+      }).catch((error) => {console.log(error.response)})
+    }
+    else{
+      console.log("algo de errado")
     }
   }
 
   useEffect(()=>{
     getDadosUsuario();
+    
     const backAction = () => {
-      Alert.alert("Calma ae amigão!", "Você realmente deseja sair do app?", [
-        {
-          text: "não",
-          onPress: () => null,
-          style: "cancel"
-        },
-        { text: "Sim", onPress: () => BackHandler.exitApp() }
-      ]);
+      Alert.alert(
+        "Alerta !!", 
+        "Você realmente deseja sair do app?", 
+        [
+          {
+            text: "Sim", 
+            onPress: () => BackHandler.exitApp() 
+          },
+
+          {
+            text: "não",
+            onPress: () => null,
+            style: "cancel"
+          }
+        ]
+      );
+
       return true;
     };
 
@@ -106,33 +127,34 @@ export default function TelaConta(props) {
   },[])
 
   async function getDadosUsuario () {
+
     let role = await AsyncStorage.getItem('tipoUser');
+
     if(role == "ROLE_CUSTOMER"){
-      try{
-        const resp = await axios.get(Config.API_PEGA_USER)
-        setGetUsuario(resp.data)
-        setNome(getUsuario.firstName)
-        setSobrenome(getUsuario.lastName);
-        setDataNascimento(getUsuario.birthDate)
-        setTelefone(getUsuario.phone)
-        setCpf(getUsuario.cpf)
 
-      }catch(e){
-        console.log(e)
-      }
-    }
-    else{
-      try{
-        const resp = await axios.get(Config.API_PEGA_ADM)
-        setGetUsuario(resp.data)
-        setNome(getUsuario.firstName)
-        setSobrenome(getUsuario.lastName);
+      axios.get(Config.API_PEGA_USER).then((response) => {
 
-      }catch(e){
-        console.log(e)
-      }
+        setGetUsuario(response.data)
+        
+        setNome(response.data.firstName)
+        setSobrenome(response.data.lastName);
+        setDataNascimento(response.data.birthDate)
+        setTelefone(response.data.phone)
+        setCpf(response.data.cpf)
+        
+      }).catch((e)=>console.log(e))
+
     }
+    else
+    {
       
+        axios.get(Config.API_PEGA_ADM).then((response) => {
+          setGetUsuario(response.data)
+          setNome(response.data.firstName)
+          setSobrenome(response.data.lastName);
+        }).catch((e)=>console.log(e))
+      
+    }
   }
 
   return (
@@ -168,9 +190,10 @@ export default function TelaConta(props) {
         <View style={styles.viewRow}>
           <Text style={styles.label}>Nascimento:</Text>
           <TextInput
-            value={dataNascimento}
+            value={dataNascimento? dataNascimento : dataNascimento}
             onChangeText={value => setDataNascimento(value)}
             autoFocus
+            placeholder='Digite data de nascimento..'
             onBlur={() => setIsEditing(false)}
             style={styles.input}
           />
@@ -182,7 +205,7 @@ export default function TelaConta(props) {
             value={telefone}
             onChangeText={value => setTelefone(value)}
             autoFocus
-            
+            placeholder= 'Digite seu telefone..'
             onBlur={() => setIsEditing(false)}
             style={styles.input}
           />
@@ -194,6 +217,7 @@ export default function TelaConta(props) {
             value={cpf}
             onChangeText={value => setCpf(value)}
             autoFocus
+            placeholder='Digite seu cpf...'
             onBlur={() => setIsEditing(false)}
             style={styles.input}
           />
@@ -295,6 +319,7 @@ const styles = StyleSheet.create({
     backgroundColor: COR.verdeFosco,
     padding: 5,
     borderRadius: 8,
+    marginTop:-80,
   },
   viewButton2: {
     width: '80%',

@@ -12,6 +12,9 @@ import { Image } from "react-native";
 const Tab = createBottomTabNavigator();
 
 const InferiorNav = ({navigation}) => {
+  useEffect(()=>{
+    
+  },[])
 
     return (
         <Tab.Navigator screenOptions={{
