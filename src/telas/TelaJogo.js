@@ -13,7 +13,8 @@ LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-const { width } = Dimensions.get('window');
+
+const { width,height } = Dimensions.get('window');
 
 export default function TelaJogo({route}){
     
@@ -47,75 +48,55 @@ export default function TelaJogo({route}){
     async function addItemToCart(idJogo) {
 
         let role = await AsyncStorage.getItem('tipoUser');
+        let token = await AsyncStorage.getItem('token');
 
-       axios.get(Config.API_BASE_URL_NEW_CART).then((responseCart)=>{
+        
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
 
+       axios.get(Config.API_CURRENT_CART,config).then((responseCart)=>{
 
-        if(responseCart.currentCart == true && role == "ROLE_CUSTOMER"){
-            axios.put(Config.API_BASE_URL_CART + idJogo).then(()=>
+        if(responseCart.data.currentCart == true && role == "ROLE_CUSTOMER"){
+            axios.put(Config.API_BASE_URL_CART + idJogo,null,config).then(()=>
                  Alert.alert(
                    "Operação realizada com exito!",
                   "Item adicionado ao carrinho",
                     [{
                        text:"OK",
                        onPress: () => (route.params.nav.navigate('Carrinho'))
-                  }])
+                  }]))
 
 
-            ).catch((error)=>Alert.alert(
-                  "Erro, operação não concluida!",
-                  "Erro: " + error,
-                  [{
-                      text: "OK",
-                     onPress: () => (route.params.nav.navigate('Catalogo'))
-                 }]
-                ))
-        }
-    else{
-        Alert.alert(
-            "Error! Cadastro nescessario para concluir ação ",
-            "Nescessario faze login para processeguir",
-            [{
-                text: "OK",
-                onPress: () => (route.params.nav.navigate('Catalogo'))
-            }]
-        )
-    }
-
-       })
-
-            
-           
-    .catch((error)=>{
-        
-        if(role == "ROLE_CUSTOMER"){
-               
-           axios.post(Config.API_BASE_URL_CART + idJogo).then(()=>
-               Alert.alert(
-              "Operação realizada com exito!",
-             "Item adicionado ao carrinho",
-                [{
-                    text: "OK",
-                    onPress: () => (route.params.nav.navigate('Carrinho'))
-                 }])
-           )
-
-         
-        }
-        else{
-            
-            Alert.alert(
-             "Erro, operação não concluida!",
-             "Erro: " + error,
-             [{
-                text: "OK",
-                onPress: () => (route.params.nav.navigate('Catalogo'))
-            }]
-             )
-        }
-    }
-    )
-    }
+                }
+                else{
+                    Alert.alert(
+                        "Erro! Cadastro nescessario para concluir ação ", "Nescessario faze login para processeguir",
+                        [{ text: "OK", onPress: () => (null) }] 
+                    )
+                }
+            }).catch((error)=>{
+                axios.post(Config.API_BASE_URL_CART+idJogo,null,config).then(()=>{
+                    Alert.alert(
+                        "Operação realizada com exito!",
+                       "Item adicionado ao carrinho",
+                         [{
+                            text:"OK",
+                            onPress: () => (route.params.nav.navigate('Carrinho'))
+                       }])
+                }).catch((e)=>{
+                    console.log(e)
+                    Alert.alert(
+                        "Erro, operação não concluida!",
+                        "Erro: " + error,
+                        [{
+                            text: "OK",
+                           onPress: () => (null)
+                       }]
+                      )
+                })
+                })
+            }
 
     function GetJogos(){
       
@@ -123,12 +104,10 @@ export default function TelaJogo({route}){
            Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
 
             if(resp != null){
-            console.log(resp.data)
+            // console.log(resp.data)
             setJogoGetById(resp.data)
             setDesenvolvedor(resp.data.developerDTO.name)
             setDistribuidora(resp.data.distributorDTO.name)
-
-
            }
             
            }
@@ -146,7 +125,7 @@ export default function TelaJogo({route}){
                     { jogoGetById.name }
                 </Text>
             </View>
-            <ScrollView  style={{height:580,width:width,marginBottom:10}}>
+            <ScrollView  style={{height:height,width:width,marginBottom:10}}>
                 <View style={styles.imagemJogo}>
                     <Image style={{width:'100%',height:'100%'}} source={{uri:jogoGetById.imgUrl}}/>
                 </View>
@@ -156,7 +135,9 @@ export default function TelaJogo({route}){
                         R${jogoGetById.price}
                  </Text>
                 </View>
-                <TouchableOpacity style={styles.carrinhoBox} onPress={()=>addItemToCart(jogoGetById.id)}>
+                <TouchableOpacity style={styles.carrinhoBox} onPress={()=>{
+                    addItemToCart(jogoGetById.id)
+                    }}>
                     <Image style={{width:40,height:40,alignSelf:'center'}} source={carrinho} />
                  </TouchableOpacity>
             </View>
@@ -174,7 +155,7 @@ export default function TelaJogo({route}){
             {
                 categories?
                 categories.map((game,key) =>(
-                    <TouchableOpacity onPress={ ()=> route.params.nav.navigate("Catalogo",{categoria:game.name})} key={key} style={styles.categoriasJogos}>
+                    <TouchableOpacity onPress={ ()=> route.params.nav.navigate("Catalogo",{categoria:game.id,nav:route.params.nav})} key={key} style={styles.categoriasJogos}>
                         <Text style={styles.categoriasText}>{game.name}</Text>
                     </TouchableOpacity>
                 ))
@@ -227,6 +208,7 @@ const styles = StyleSheet.create({
       backgroundColor:COR.verdeFosco,
       borderBottomLeftRadius:8,
       borderBottomRightRadius:8,
+      marginBottom:-20,
     },
     imagemJogo:{
         width: width-20,

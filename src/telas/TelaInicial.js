@@ -14,10 +14,11 @@ export default function TelaInicial ({ navigation }){
 
   const [gamesGet,setGamesGet] = useState([{}]);
 
-  // const [princGames, setprincGames] = useState([{}]);
+  const [banner, setBanner] = useState([{}]);
 
   useEffect(()=>{
     GetJogos();
+    GetBanner();
   },[refreshing])
 
      //atualiza tela
@@ -33,15 +34,24 @@ export default function TelaInicial ({ navigation }){
     }
 
     function GetJogos(){
-      axios.get(Config.API_PEGA_JOGOS,
-        Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>
-         setGamesGet(resp.data.content)
-        ).catch((e)=>{
-         console.log(e)
-        })
+      axios.get(Config.API_PEGA_JOGOS,Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
+      .then((resp)=>{
+        setGamesGet(resp.data)
+      })
+      .catch((e)=>{console.log(e)})
     }
+    function GetBanner(){
+      axios.get(Config.API_BANNER_PRODUCTS, Config.TIMEOUT_REQUEST, Config.HEADER_REQUEST.Accept)
+      .then((response)=>{
+        setBanner(response.data)
+      }).catch((e)=>{console.log(e)})
+    }
+
+
+
     return (
       <View style={{backgroundColor:COR.branco}}>
+
       <BarraSuperior title='Destaques' navigation = {navigation}/>
       <ScrollView style={{height:height-130,width:width}}
           decelerationRate={0}
@@ -55,7 +65,15 @@ export default function TelaInicial ({ navigation }){
         </Text>
       </View>
         <View style={{marginTop:-5}}>
-          <CardHorizontal/>
+          {
+            banner.length>1?
+             <CardHorizontal games = {banner} 
+          navigation = {navigation}/>
+          :
+            <>
+            </>
+          }
+         
         </View>
         <View style={[styles.fundoPromocoes,{marginBottom:10}]}>
         <Text style={styles.textoPromocoes}>
@@ -70,7 +88,7 @@ export default function TelaInicial ({ navigation }){
 
               <View key={key}
                style={styles.container}>
-            <TouchableOpacity key={game.id} style={styles.cardFormato} onPress={()=>EnviarDadosTelaJogoENavegar(game.id)}>
+            <TouchableOpacity key={game.id} style={styles.cardFormato} onPress={()=>{EnviarDadosTelaJogoENavegar(game.id)}}>
                 <View style={styles.LugarImagem}>
                     <Image style={{width:'100%',height:'100%'}} source={{uri:game.imgUrl}}/>
                 </View>
@@ -89,8 +107,7 @@ export default function TelaInicial ({ navigation }){
               null
             }
             </View>
-               </ScrollView>
-
+          </ScrollView>
         </View>
       );
     };

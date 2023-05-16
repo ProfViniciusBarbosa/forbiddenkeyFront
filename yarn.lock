@@ -825,6 +825,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@homielab/react-native-auto-scroll@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@homielab/react-native-auto-scroll/-/react-native-auto-scroll-0.0.9.tgz#419366866ec37c814486f00720f1bcd5c5f6cc25"
+  integrity sha512-82Jr2m7CrLopgXr1WJxRbB7+qfchpyXz2QgNumPKHxRhi9HS+Zeux/MzJDt10zoHuUYN/CzHOqurkk+lD84RYA==
+
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.5.0.tgz#1407967d4c6eecd7388f83acf1eaf4d0c6e58ef9"

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PrincipalNavegacao, SecundariaNavegacao, TerceiraNavegacao } from "../stack/SuperiorNav.tsx"; 
+import { PrincipalNavegacao, SecundariaNavegacao, TerceiraNavegacao } from "../stack/SuperiorNav.js"; 
 
 import COR from "../../assets/CSS/COR";
 import inicio from '../../assets/icons/inicio.png';

@@ -47,7 +47,7 @@ const TelaLogin = (props)=>{
 
    useEffect(() => {
     const backAction = () => {
-      Alert.alert("Calma ae amigão!", "Você realmente deseja sair do app?", [
+      Alert.alert("Ei !", "Você realmente deseja sair do app?", [
         {
           text: "não",
           onPress: () => null,

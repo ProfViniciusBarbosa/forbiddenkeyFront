@@ -17,7 +17,6 @@ import COR from '../assets/CSS/COR';
 import UserPhoto from '../assets/icons/User.png';
 import Config from '../assets/mocks/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaskedTextInput } from 'react-native-mask-text';
 
 const { width , height } = Dimensions.get('window');
 
@@ -36,6 +35,8 @@ export default function TelaConta(props) {
   const [dataNascimento,setDataNascimento] = useState('');
 
   const [cpf, setCpf] = useState('');
+
+  const [role, setRole] = useState('');
 
   function sairTela (){
     removeItemValue();
@@ -61,12 +62,20 @@ export default function TelaConta(props) {
       phone : telefone,
       firstName: nome,
 		  lastName : sobrenome,
-		  email : getUsuario.email,
-		  password : props.passwordUser,
     }
 
-    let role = await AsyncStorage.getItem('tipoUser');
-    
+    if(cpf==''){
+      Alert.alert(
+        "Campo CPF obrigatório!",
+        "Informe o CPF para salvar!", 
+        [
+          {
+             text: "OK",
+          },
+        ]
+      );
+    }
+
     if(role == "ROLE_CUSTOMER"){
       axios.put(Config.API_UPDATE_CUSTOMER, paramsCUSTOMER).then((response) => {        
         console.log(response.data)
@@ -95,7 +104,11 @@ export default function TelaConta(props) {
   }
 
   useEffect(()=>{
-    getDadosUsuario();
+    async function getRoleUse(){
+      let roleUser = await AsyncStorage.getItem('tipoUser');
+      setRole(roleUser);
+    }
+    getRoleUse();
     
     const backAction = () => {
       Alert.alert(
@@ -126,13 +139,19 @@ export default function TelaConta(props) {
     return () => backHandler.remove();
   },[])
 
-  async function getDadosUsuario () {
+  useEffect(()=>{
+    if(role!=''){
+      getDadosUsuario();
+    }
+  },[role])
 
-    let role = await AsyncStorage.getItem('tipoUser');
+  async function getDadosUsuario () {
 
     if(role == "ROLE_CUSTOMER"){
 
       axios.get(Config.API_PEGA_USER).then((response) => {
+
+        console.log(response)
 
         setGetUsuario(response.data)
         
@@ -186,46 +205,62 @@ export default function TelaConta(props) {
           <Text style={styles.label}>Sobrenome:</Text>
           <Text style={styles.label}>{getUsuario.lastName}</Text>
         </View>
-
-        <View style={styles.viewRow}>
-          <Text style={styles.label}>Nascimento:</Text>
-          <TextInput
-            value={dataNascimento? dataNascimento : dataNascimento}
-            onChangeText={value => setDataNascimento(value)}
-            autoFocus
-            placeholder='Digite data de nascimento..'
-            onBlur={() => setIsEditing(false)}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.viewRow}>
-          <Text style={styles.label}>Telefone:</Text>
-          <TextInput
-            value={telefone}
-            onChangeText={value => setTelefone(value)}
-            autoFocus
-            placeholder= 'Digite seu telefone..'
-            onBlur={() => setIsEditing(false)}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.viewRow}>
-          <Text style={styles.label}>CPF:</Text>
-          <TextInput
-            value={cpf}
-            onChangeText={value => setCpf(value)}
-            autoFocus
-            placeholder='Digite seu cpf...'
-            onBlur={() => setIsEditing(false)}
-            style={styles.input}
-          />
-        </View>
+        {
+          role == 'ROLE_ADMIN'?
+          <>
+          </>
+          :
+          <>
+          <View style={styles.viewRow}>
+            <Text style={styles.label}>Nascimento:</Text> 
+            <TextInput
+              value={dataNascimento? dataNascimento : dataNascimento}
+              onChangeText={value => setDataNascimento(value)}
+              autoFocus
+              placeholder='Digite data de nascimento..'
+              onBlur={() => setIsEditing(false)}
+              style={styles.input}
+            />
+          </View>
+  
+          <View style={styles.viewRow}>
+            <Text style={styles.label}>Telefone:</Text>
+            <TextInput
+              value={telefone}
+              onChangeText={value => setTelefone(value)}
+              autoFocus
+              placeholder= 'Digite seu telefone..'
+              onBlur={() => setIsEditing(false)}
+              style={styles.input}
+            />
+          </View>
+  
+          <View style={styles.viewRow}>
+            <Text style={{color: COR.vermelho, fontSize: 20, marginRight: -50}}>*</Text>
+            <Text style={styles.label}>CPF:</Text>
+            <TextInput
+              value={cpf}
+              onChangeText={value => setCpf(value)}
+              autoFocus
+              placeholder='Digite seu cpf...'
+              onBlur={() => setIsEditing(false)}
+              style={styles.input}
+            />
+          </View>
+          </>
+        }
+       
       </View>
-      <TouchableOpacity onPress={()=> atulizaInformacoes()} style={styles.viewButton}>
-        <Text style={styles.buttonText}>Salvar</Text>
-      </TouchableOpacity>
+      {
+        role == 'ROLE_ADMIN'?
+        <>
+        </>
+        :
+        <TouchableOpacity onPress={()=> atulizaInformacoes()} style={styles.viewButton}>
+          <Text style={styles.buttonText}>Salvar</Text>
+        </TouchableOpacity>
+      }
+        
       <TouchableOpacity onPress={()=> sairTela()} style={styles.viewButton2}>
         <Text style={styles.buttonText}>Sair do Login</Text>
       </TouchableOpacity>
@@ -306,12 +341,13 @@ const styles = StyleSheet.create({
     width: '60%',
     // width: 200,
     height: 40,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     paddingHorizontal: 18,
     borderWidth: 1,
     borderColor: COR.verdeFosco,
     borderRadius: 8,
+    lineHeight:18,
   },
   viewButton: {
     width: '80%',

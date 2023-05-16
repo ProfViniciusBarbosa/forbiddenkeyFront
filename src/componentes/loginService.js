@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 
 class LoginService {
-  static signin = async (data:any) => {
+  static signin = async (data) => {
     try {
       const { username, password } = data;
       const params = {

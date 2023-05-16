@@ -47,7 +47,7 @@ export default function TelaCatalogo({route}){
         route.params.nav.navigate("Jogo",{idJogo:idJogo,nav:route.params.nav});
       }
     
-      const [categoria, setCategoria] = useState(route.params.categoria? route.params.categoria : '');
+      const [categoria, setCategoria] = useState('');
 
       const [openCategoria, setOpenCategoria] = useState(false);
     
@@ -65,7 +65,6 @@ export default function TelaCatalogo({route}){
         GetCategorias()
         GetDistribuidoras()
         GetDesenvolvedores()
-        
     },[])
 
     useEffect(()=>{
@@ -85,6 +84,14 @@ export default function TelaCatalogo({route}){
             
       },[getCompletoCategorias])
 
+      useEffect(()=>{
+        if(route.params.categoria != undefined){
+          setCategoria(route.params.categoria)
+        }
+      },[route.params.categoria])
+      useEffect(()=>{
+        console.log(categoria)
+      },[categoria])
       useEffect(()=>{
         if(Object.keys(getCompletoDistribuidoras).length > 1){
         
@@ -122,7 +129,7 @@ export default function TelaCatalogo({route}){
       
           axios.get(Config.API_PEGA_JOGOS,
            Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>
-            setGamesGet(resp.data.content)
+            setGamesGet(resp.data)
            ).catch((e)=>{
             console.log(e)
            })
@@ -132,7 +139,7 @@ export default function TelaCatalogo({route}){
 
           axios.get(Config.API_PEGA_FILTROS,
            Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
-              setGetCompletoCategorias(resp.data.content)
+              setGetCompletoCategorias(resp.data)
            }).catch ((e)=>
           {
             console.log(e)
@@ -143,7 +150,7 @@ export default function TelaCatalogo({route}){
       function GetDistribuidoras(){
           axios.get(Config.API_PEGA_DISTRIBUIDORAS,
           Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
-            setGetCompletoDistribuidoras(resp.data.content)
+            setGetCompletoDistribuidoras(resp.data)
            }).catch ((e)=>
           {
             console.log(e)
@@ -154,7 +161,7 @@ export default function TelaCatalogo({route}){
         axios.get(Config.API_PEGA_DESENVOLVEDORES,
         Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
 
-            setGetCompletoDesenvolvedoras(resp.data.content)
+            setGetCompletoDesenvolvedoras(resp.data)
 
         })}
 
@@ -246,195 +253,231 @@ export default function TelaCatalogo({route}){
           {
             gamesGet?
             gamesGet.filter((game) =>{
-              if(categoria != '')
+              //1 categoria
+              if(categoria != '' && Desenvolvedora == '' && distribuidora  == '' && preco =='')
               {
-                if(Desenvolvedora != '' || distribuidora != '' || preco != '')
-                {
-                  for(let i = 0;i< Object.keys(game.categories).length;i++)
-                  {    
-                    if(game.categories[i].name == itensCategoria[categoria-1].label)
-                    {      
-                      if(Desenvolvedora != '' && distribuidora == '' && preco == '')
-                      {
-                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
-                        {
-                          if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
-                          {
-                            return game
-                          }
-                        }
-                      }
-                      
-                      else if(Desenvolvedora != '' && distribuidora != '' && preco == '')
-                      {
-                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
-                        {
-                          if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
-                          {
-                            for (let i = 0;i< Object.keys(game.distributorDTO).length;i++)
-                            {
-                              if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
-                              {
-                                return game
-                              }
-                            }
-                          }
-                        }
-                      }
-                      
-                      else if(Desenvolvedora != '' && distribuidora == '' && preco != '')
-                      {
-                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
-                        {
-                          if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
-                          {
-                            console.log(game.price)
-                            
-                            console.log(itensPreco[preco-1])
-    
-                            if(itensPreco[preco-1].value == 1 && game.price <=20){
-                              return game
-                            }
-                            else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                              return game
-                            }
-                            else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                              return game
-                            }    
-                          }
-                        }
-                      }
-                    }
-                  }
+                for(let i = 0;i< Object.keys(game.categories).length;i++)
+               {
+                if(game.categories[i].name == itensCategoria[categoria-1].label){
+                  return game
                 }
-                
-                else
+              }
+              }
+              //2 desenvolvedora
+              if(categoria == '' && Desenvolvedora != '' && distribuidora  == '' && preco =='')
+              {
+                if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
                 {
-                  for(let i = 0;i< Object.keys(game.categories).length;i++)
-                  {    
-                    if(game.categories[i].name == itensCategoria[categoria-1].label)
-                    {      
+                  return game
+                }
+              }
+              //3 distribuidora
+              if(categoria == '' && Desenvolvedora == '' && distribuidora  != '' && preco =='')
+              {
+                if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
+                {
+                  return game
+                }
+              }
+              //4 preco
+              if(categoria == '' && Desenvolvedora == '' && distribuidora  == '' && preco !='')
+              {
+                if(itensPreco[preco-1].value == 1 && game.price <=20){
+                  return game
+                }
+                else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                  return game
+                }
+                else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                  return game
+              }
+            }
+            //5 categoria + desenvolvedora
+            if(categoria != '' && Desenvolvedora != '' && distribuidora  == '' && preco =='')
+            {
+              for(let i = 0;i< Object.keys(game.categories).length;i++)
+             {
+              if(game.categories[i].name == itensCategoria[categoria-1].label){
+                if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label){
+                  return game
+                }
+              }
+            }
+            }
+            //6 categoria + distribuidora
+            if(categoria != '' && Desenvolvedora == '' && distribuidora  != '' && preco =='')
+            {
+              for(let i = 0;i< Object.keys(game.categories).length;i++)
+             {
+              if(game.categories[i].name == itensCategoria[categoria-1].label){
+                if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
+                  return game
+                }
+              }
+            }
+            }
+            //7 categoria + preço
+            if(categoria != '' && Desenvolvedora == '' && distribuidora  == '' && preco !='')
+            {
+              for(let i = 0;i< Object.keys(game.categories).length;i++)
+             {
+              if(game.categories[i].name == itensCategoria[categoria-1].label){
+                if(itensPreco[preco-1].value == 1 && game.price <=20){
+                  return game
+                }
+                else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                  return game
+                }
+                else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                  return game
+              }
+              }
+            }
+            }
+            //8 desenvolvedora + distribuidora
+            if(categoria == '' && Desenvolvedora != '' && distribuidora  != '' && preco =='')
+            {
+              if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+              {
+                if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
+                  return game
+                }
+              }
+            }
+            //9 desenvolvedora + preço
+            if(categoria == '' && Desenvolvedora != '' && distribuidora  == '' && preco !='')
+            {
+              if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+              { 
+                  if(itensPreco[preco-1].value == 1 && game.price <=20){
+                    return game
+                  }
+                  else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                    return game
+                  }
+                  else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                    return game
+                }
+              }
+            }
+            //10 distribuidora + preço
+            if(categoria == '' && Desenvolvedora == '' && distribuidora  != '' && preco !='')
+            {
+              if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
+              {
+                  if(itensPreco[preco-1].value == 1 && game.price <=20){
+                    return game
+                  }
+                  else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                    return game
+                  }
+                  else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                    return game
+                }
+                }
+              }
+              //11 categoria + desenvolvedora + distribuidora
+              if(categoria != '' && Desenvolvedora != '' && distribuidora  != '' && preco =='')
+              {
+                for(let i = 0;i< Object.keys(game.categories).length;i++)
+               {
+                if(game.categories[i].name == itensCategoria[categoria-1].label){
+
+                  if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label){
+                    if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
                       return game
                     }
                   }
                 }
               }
-              
-              //Condições com Desenvolvedora para pesquisa
-              else if (categoria =='' && Desenvolvedora != '')
+              }
+              //12 categoria + desenvolvedora + preço
+              if(categoria != '' && Desenvolvedora != '' && distribuidora  == '' && preco !='')
               {
-                if(distribuidora != '' || preco != '')
-                {
-                  if(distribuidora != '' && preco != '')
-                  {
-                    for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
-                    {
-                      if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
-                      {
-                        return game
-                      }
+                for(let i = 0;i< Object.keys(game.categories).length;i++)
+               {
+                if(game.categories[i].name == itensCategoria[categoria-1].label){
 
-                      if(itensPreco[preco-1].value == 1 && game.price <=20)
-                      {
-                        return game
-                      }
-
-                      else if(itensPreco[preco-1].value == 2 && game.price <=50)
-                      {
-                        return game
-                      }
-
-                      else if(itensPreco[preco-1].value == 3 && game.price <=100)
-                      {
-                        return game
-                      }    
+                  if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label){
+                    if(itensPreco[preco-1].value == 1 && game.price <=20){
+                      return game
                     }
-                  } 
-                           
-                  else if(distribuidora != '' && preco == ''){
-                    for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
-                    {
-                      if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
-                      {
-                        return game
-                      }
+                    else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                      return game
                     }
-                  } 
-
-                  else if(distribuidora == '' && preco != ''){
-                    for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
-                    {
-                      if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
-                      {
-                        return game
-                      }
-                    }
+                    else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                      return game
+                  }
                   }
                 }
-                  
-                else
+              }
+              }
+              //13 categoria + distribuidora + preço
+              if(categoria != '' && Desenvolvedora == '' && distribuidora  != '' && preco !='')
+              {
+                for(let i = 0;i< Object.keys(game.categories).length;i++)
+               {
+                if(game.categories[i].name == itensCategoria[categoria-1].label)
                 {
-                  for(let i = 0;i< Object.keys(game.developerDTO).length;i++)
+                  if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
                   {
-                    if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
-                    {  
+                    if(itensPreco[preco-1].value == 1 && game.price <=20){
+                      return game
+                    }
+                    else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                      return game
+                    }
+                    else if(itensPreco[preco-1].value == 3 && game.price <=100){
                       return game
                     }
                   }
                 }
+                }
               }
-              // Fim condições com Desenvolvedora para pesquisa
-              
-              // Condições com Distribuidora para pesquisa
-              else if(categoria =='' && Desenvolvedora == '' && distribuidora != '')
-              {
-                if(categoria != '' || Desenvolvedora != '' || preco != '')
-                {
-                  if(categoria != '' && Desenvolvedora == '' && preco == '')
-                  {
-                    for(let i = 0;i< Object.keys(game.categories).length;i++)
-                    {
-                      if(game.categories[i].name == itensCategoria[categoria-1].label)
-                      {
-                        return game
-                      }
-                    }
-                  }
-      
-                  else if(categoria != '' && Desenvolvedora != '' && preco == '')
-                  {
-                    for (let i = 0;i< Object.keys(game.categories).length;i++)
-                    {
-                      if(game.categories.name == itensCategoria[categoria-1].label)
-                      {
-                        for (let i = 0;i< Object.keys(game.developerDTO).length;i++)
-                        {
-                          if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
-                          {
-                            return game
-                          }
-                        }
-                      }
-                    }
-                  }  
-                      else{
-                        for(let i = 0;i< Object.keys(game.categories).length;i++)
-                        {
-                         if(game.categories[i].name == itensCategoria[categoria-1].label)
-                         {  
-                          return game
-                         }
-                        }
-                     }
-                    }
-                  }
-                  // Fim condições com Distribuidoras para pesquisa
 
-                  //Condições de Preço preenchidas
+              //14 desenvolvedora + distribuidora + preço
+              if(categoria == '' && Desenvolvedora != '' && distribuidora  != '' && preco !='')
+              {
+                if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                {
+                  if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
+                    if(itensPreco[preco-1].value == 1 && game.price <=20){
+                      return game
+                    }
+                    else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                      return game
+                    }
+                    else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                      return game
+                  }
+                  }
+                }
+              }
+              //15 todos
+              if(categoria != '' && Desenvolvedora != '' && distribuidora  != '' && preco !='')
+              {
+                for(let i = 0;i< Object.keys(game.categories).length;i++)
+               {
+                if(game.categories[i].name == itensCategoria[categoria-1].label){
+                  if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
+                {
+                  if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
+                    if(itensPreco[preco-1].value == 1 && game.price <=20){
+                      return game
+                    }
+                    else if(itensPreco[preco-1].value == 2 && game.price <=50){
+                      return game
+                    }
+                    else if(itensPreco[preco-1].value == 3 && game.price <=100){
+                      return game
+                  }
+                  }
+                }
+                }
+              }
+              }
                   
-                  //Fecha condções de preço
-                  
-                  // Caso nenhuma das condições estiver preenchidas
+              //16 Caso nenhuma das condições estiver preenchidas
                   else if (categoria == '' && Desenvolvedora == '' && distribuidora == '' && preco == '')
                   {
                     return game

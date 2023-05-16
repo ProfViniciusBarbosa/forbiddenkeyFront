@@ -29,14 +29,6 @@ export default function TelaCartao(props) {
   
   const [holderCpf, setHolderCpf] = useState('');
 
-  // useEffect(()=>{
-  //   if(holder != ''){
-  //     const response1 = axios.post(URL,{holder}).then(
-
-  //       ).catch((e)=>console.log(e))
-  //   }
-  // },[holder])
-
   useEffect(() => {
     const backAction = () => {
 
@@ -67,10 +59,8 @@ export default function TelaCartao(props) {
 
     if(role == "ROLE_CUSTOMER"){
       console.log(params)
-        const response  = await axios.post(Config.API_BASE_URL_NEW_CART, params)
-        
-        
-        Alert.alert(
+        axios.post(Config.API_BASE_URL_CARD, params).then((resp)=>{
+          Alert.alert(
           "Cartão cadastrado com sucesso !",
           "Você já pode uso para realizar as suas compras!",
           [
@@ -80,9 +70,9 @@ export default function TelaCartao(props) {
             },
           ]
         );
-      }
-      else{
-      Alert.alert(
+      }).catch((e)=>{
+        console.log(e)
+        Alert.alert(
         "Erro ao cadastrar o novo cartão !",
         "Verifique as informações passada e tente novamente!",
         [
@@ -90,8 +80,8 @@ export default function TelaCartao(props) {
             text: "OK",
           },
         ]
-      );
-    }
+      );})
+    }     
   }
   return (
     <KeyboardAvoidingView style={styles.center}>
@@ -200,6 +190,7 @@ const styles = StyleSheet.create({
     fontWeight: '200',
     paddingHorizontal: 18,
     borderWidth: 1,
+    lineHeight:20,
     borderColor: COR.verdeFosco,
     borderRadius: 8,
     marginVertical: 5,
@@ -209,6 +200,7 @@ const styles = StyleSheet.create({
     // width: 200,
     height: 40,
     fontSize: 20,
+    lineHeight:20,
     fontWeight: '200',
     paddingHorizontal: 18,
     borderWidth: 1,

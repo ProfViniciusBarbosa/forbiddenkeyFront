@@ -32,6 +32,8 @@ export default function TelaCart({navigation}) {
 
   const [card, setCard] = useState([{}])
 
+  const [itemRemove, setItemRemove] = useState(false)
+
 
   useEffect(()=>{
     GetCurrentCart();
@@ -51,35 +53,44 @@ export default function TelaCart({navigation}) {
     return () => backHandler.remove();
   }, []);
 
+  useEffect(()=>{
+    GetCurrentCart()
+  },[itemRemove])
   
   const [itensCard, setItensCard] = useState([]);
   
   function GetCartoes(){
     axios.get(Config.API_BASE_URL_CARD).then((resp)=>{
-      if(resp != null && resp != undefined){
+      if(resp){
         setCard(resp.data)
 
         let newArray = [];
 
-        var quantidadeChaves = Object.keys(card).length
+        var quantidadeChaves = Object.keys(resp.data).length
 
         for(var i = 0; i < quantidadeChaves; i++){
           newArray.push({
-            label: card[i].bannerDTO.name,
-            value: card[i].id,
+            label: resp.data[i].bannerDTO.name,
+            value: resp.data[i].id,
           })
 
             setItensCard(newArray)
         }
         }  
-    })     
+    }).catch((e)=>{console.log(e)})     
   }
 
 
   async function GetCurrentCart(){
     let role = await AsyncStorage.getItem('tipoUser');
+    let token = await AsyncStorage.getItem('token');
+
+        
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
     if(role == "ROLE_CUSTOMER"){
-        axios.get(Config.API_CURRENT_CART).then((resp)=>{
+        axios.get(Config.API_CURRENT_CART,config).then((resp)=>{
           if(resp != null){
           setCurrentCart(resp.data)
           }
@@ -93,9 +104,10 @@ export default function TelaCart({navigation}) {
                },
              ]
             );
-          }})
+          }}).catch((e)=>console.log(e))
    
       }else{
+        setCurrentCart([{}])
         Alert.alert(
           "Não é possivel adicionar ou vizualizar itens do carrinho !",
           "Logue na aplicação para vizualizar e adiconar itens ao carrinho!",
@@ -109,27 +121,33 @@ export default function TelaCart({navigation}) {
       }
     }
 
-  function removeItemByCart(idItem) {
-    axios.delete(Config.API_BASE_URL_CART + idItem).then((resp)=>{
-      try{
+  async function removeItemByCart(idItem) {
+    let token = await AsyncStorage.getItem('token');
+
+        
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+    axios.delete(Config.API_BASE_URL_CART + idItem,config).then(()=>{
+        setItemRemove(!itemRemove)
         Alert.alert('Item removido',
         'Operção feita com sucesso',[
          {
            text:"OK"
           },
         ]);
-      }catch(error){
-        Alert.alert(
-          "Error!" + error,
-          "Não foi possivel remover item do carrinho!",
-          [
-            {
-              text: "OK",
-            },
-          ]
-        );
       }
-    })  
+    ).catch((error)=>{
+      Alert.alert(
+        "Error!" + error,
+        "Não foi possivel remover item do carrinho!",
+        [
+          {
+            text: "OK",
+          },
+        ]
+      );
+    })
   }
 
   return (
@@ -165,7 +183,10 @@ export default function TelaCart({navigation}) {
             </TouchableOpacity>
           </View>
         </View>
-        )): null
+        )): <Text style={{fontSize:20,textAlign:'center',color:COR.vinho}}>
+          Não Existem jogos no carrinho atual!
+          Adicione jogos para compra-los
+        </Text>
       }
       
       <View style={styles.linha} />
