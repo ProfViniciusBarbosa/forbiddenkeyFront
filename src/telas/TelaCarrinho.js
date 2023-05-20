@@ -59,8 +59,12 @@ export default function TelaCart({navigation}) {
   
   const [itensCard, setItensCard] = useState([]);
   
-  function GetCartoes(){
-    axios.get(Config.API_BASE_URL_CARD).then((resp)=>{
+  async function GetCartoes(){
+    let token = await AsyncStorage.getItem('token');
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+    axios.get(Config.API_BASE_URL_CARD,config).then((resp)=>{
       if(resp){
         setCard(resp.data)
 
@@ -156,10 +160,7 @@ export default function TelaCart({navigation}) {
       <View style={styles.viewtitulo}>
         <Text style={styles.titulo}> Carrinho </Text>
       </View>
-
-{
-  console.log(currentCart)
-}
+      
       {
         currentCart.products?
         currentCart.products.map((jogo,key)=>(
@@ -174,10 +175,12 @@ export default function TelaCart({navigation}) {
           <View style={styles.content}>
             <View style={styles.viewTituloJogo}>
               <Text numberOfLines={1} style={styles.tituloJogo}>
-                {jogo.name}
+               {jogo.name}
               </Text>
             </View>
-  
+                <Text style={styles.precoCardCarrinho}>
+                R$ {jogo.price}
+                </Text>
             <TouchableOpacity onPress={()=>removeItemByCart(jogo.id)} style={styles.viewRemover}>
               <Text style={styles.Remover}>remover</Text>
             </TouchableOpacity>
@@ -208,6 +211,7 @@ export default function TelaCart({navigation}) {
               radio_props={itensCard}
               initial={0}
               onPress={item => {
+              console.log(item)
               setValue(item);
               }}
               buttonColor={COR.verdeFosco}
@@ -291,6 +295,12 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 4,
     marginTop: 5,
+  },
+  precoCardCarrinho:{
+      fontSize: 18,
+      fontWeight: '500',
+      color: COR.branco,
+      // paddingHorizontal: 8,
   },
   Remover: {
     fontSize: 18,

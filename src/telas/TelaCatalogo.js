@@ -50,14 +50,14 @@ export default function TelaCatalogo({route}){
       const [categoria, setCategoria] = useState('');
 
       const [openCategoria, setOpenCategoria] = useState(false);
-    
-      const [distribuidora, setDistribuidora] = useState(route.params.distribuidora? route.params.distribuidora : '');
+    //route.params.distribuidora? route.params.distribuidora : 
+      const [distribuidora, setDistribuidora] = useState('');
       const [openDistribuidora, setOpenDistribuidora] = useState(false);
     
       const [preco, setPreco] = useState('');
       const [openPreco, setOpenPreco] = useState(false);
-    
-      const [Desenvolvedora, setDesenvolvedora] = useState(route.params.desenvolvedora? route.params.desenvolvedora : '');
+    //route.params.desenvolvedora? route.params.desenvolvedora :
+      const [Desenvolvedora, setDesenvolvedora] = useState('');
       const [openDesenvolvedora, setOpenDesenvolvedora] = useState(false);
 
     useEffect(()=>{
@@ -84,11 +84,11 @@ export default function TelaCatalogo({route}){
             
       },[getCompletoCategorias])
 
-      useEffect(()=>{
-        if(route.params.categoria != undefined){
-          setCategoria(route.params.categoria)
-        }
-      },[route.params.categoria])
+      // useEffect(()=>{
+      //   if(route.params.categoria != undefined){
+      //     setCategoria(route.params.categoria)
+      //   }
+      // },[route.params.categoria])
       useEffect(()=>{
         console.log(categoria)
       },[categoria])

@@ -82,7 +82,7 @@ const TelaLogin = (props)=>{
               grant_type: "client_credentials",
           }
              const resp = await LoginService.signin({username:usuarioLogin,password: senhaLogin})
-
+              console.log(resp.data)
               var tokenzin = await AsyncStorage.getItem('token')
               if(tokenzin != null){
                 setToken(JSON.stringify(tokenzin));
@@ -99,13 +99,31 @@ const TelaLogin = (props)=>{
                   ]
                 );
               }
+              else{
+                setErrou(true)
+                setTimeout(() => {
+                   setErrou(false)
+               }, 1500);
+                Alert.alert(
+                  "Algo deu errado !!!",
+                  "Não foi possivel logar, Verifique se login e senha estão corretos e tente novamente!",
+                  [
+                    {
+                    text: "OK",
+                    }
+                  ])
+              }
               
              }
              catch(error)
              {
+              setErrou(true)
+              setTimeout(() => {
+                 setErrou(false)
+             }, 1500);
                 Alert.alert(
                   "Algo deu errado !!!",
-                  "Não foi possivel logar, tente novamente",
+                  "Não foi possivel logar, Verifique se login e senha estão corretos e tente novamente!",
                   [
                     {
                     text: "OK",
@@ -130,7 +148,7 @@ const TelaLogin = (props)=>{
             <View style={{alignSelf:'center',width:200, height:80,backgroundColor:COR.branco,borderRadius:4}}>
             <Image source={logo} style={{alignSelf:'center',width:400, height:200,marginVertical:-70}}/>
             </View>
-        <Text style={{marginTop:25,color:Errou? COR.branco:COR.branco,fontWeight:'bold', alignSelf:'center', fontSize:26, textShadowOffset: {width: 3, height: 3},
+        <Text style={{marginTop:25,color:Errou? COR.vermelho:COR.branco,fontWeight:'bold', alignSelf:'center', fontSize:26, textShadowOffset: {width: 3, height: 3},
     textShadowRadius: 5,
     textShadowColor: COR.vinho}}>Usuário</Text>
             <View style={{ 
@@ -147,7 +165,7 @@ const TelaLogin = (props)=>{
             returnKeyType="next"
             blurOnSubmit={false}
             placeholder="Digite Usuário"
-            placeholderTextColor={Errou? COR.branco:COR.cinza}
+            placeholderTextColor={Errou? COR.vermelho:COR.cinza}
             multiline={false}
             autoComplete={"username"}
             maxLength={35}
@@ -159,12 +177,12 @@ const TelaLogin = (props)=>{
               marginRight:5,
               fontSize:20,
               marginVertical:3,
-              color:COR.preto
+              color:Errou? COR.vermelho:COR.preto
             
         }}
       />
       </View>
-      <Text style={{color:Errou? COR.branco:COR.branco,alignSelf:'center',fontWeight:'bold',fontSize:26, textShadowOffset: {width: 3, height: 3},
+      <Text style={{color:Errou? COR.vermelho:COR.branco,alignSelf:'center',fontWeight:'bold',fontSize:26, textShadowOffset: {width: 3, height: 3},
     textShadowRadius: 5,
     textShadowColor: COR.vinho}}>Senha</Text>
       <View style={{
@@ -180,7 +198,7 @@ const TelaLogin = (props)=>{
                 returnKeyType="next"
                 blurOnSubmit={false}
                 placeholder="Digite Senha"
-                placeholderTextColor={Errou? COR.branco:COR.cinza}
+                placeholderTextColor={Errou? COR.vermelho:COR.cinza}
                 multiline={false}
                 autoComplete={"password"}
                 maxLength={30}
@@ -193,7 +211,7 @@ const TelaLogin = (props)=>{
                     fontSize:20,
                     width:230,
                     marginVertical:3,
-                    color:COR.preto
+                    color:Errou? COR.vermelho:COR.preto
                     
             }}
         />

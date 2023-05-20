@@ -9,11 +9,13 @@ import {
   Alert,
   BackHandler,
   KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import COR from '../assets/CSS/COR';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from '../componentes/customAxios';
 import Config from '../assets/mocks/Config';
+import RadioForm from 'react-native-simple-radio-button';
 
 export default function TelaCartao(props) {
   
@@ -28,6 +30,14 @@ export default function TelaCartao(props) {
   const [securityNumber, setSecurityNumber] = useState('');
   
   const [holderCpf, setHolderCpf] = useState('');
+  
+  const [itensCard, setItensCard] = useState([]);
+
+  const [bandeiraSelecionada,setBandeiraSelecionada] = useState()
+
+  useEffect(()=>{
+    getBanners();
+  },[])
 
   useEffect(() => {
     const backAction = () => {
@@ -44,9 +54,42 @@ export default function TelaCartao(props) {
     return () => backHandler.remove();
   }, []);
 
+  async function getBanners(){
+
+    let token = await AsyncStorage.getItem('token');
+
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+    
+    axios.get(Config.API_PEGA_BANDEIRAS_CARTAO,config)
+    .then((resp)=>{
+      console.log(resp.data);
+      if(Object.keys(resp.data).length > 1){
+
+        let newArray = [];
+  
+        const quantidadeChaves = Object.keys(resp.data).length
+  
+        for(var i = 0; i < quantidadeChaves; i++){
+            newArray.push({
+                label: resp.data[i].name,
+                value: resp.data[i].id,
+            })}
+            setItensCard(newArray)
+        }
+      // setItensCard(resp.data);
+    })
+    .catch((e)=>{
+      console.log(e)
+    })
+  
+  }
+
   async function addNewCart() {
 
     let role = await AsyncStorage.getItem('tipoUser');
+    let token = await AsyncStorage.getItem('token');
 
     var params = {
       number: number,
@@ -54,15 +97,22 @@ export default function TelaCartao(props) {
       expirationDateMonth: expirationDateMonth,
       expirationDateYear: expirationDateYear,
       securityNumber: securityNumber,
-      holderCpf: holderCpf
+      holderCpf: holderCpf,
+      bannerDTO: {
+        id:bandeiraSelecionada
+    }
     }
 
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+    
     if(role == "ROLE_CUSTOMER"){
-      console.log(params)
-        axios.post(Config.API_BASE_URL_CARD, params).then((resp)=>{
+        axios.post(Config.API_BASE_URL_CARD, params,config).then((resp)=>{
+          console.log(resp)
           Alert.alert(
           "Cartão cadastrado com sucesso !",
-          "Você já pode uso para realizar as suas compras!",
+          "Você já pode usa-lo para realizar as suas compras!",
           [
             {
               text: "OK",
@@ -85,6 +135,7 @@ export default function TelaCartao(props) {
   }
   return (
     <KeyboardAvoidingView style={styles.center}>
+      <ScrollView>
       <View style={styles.viewtitulo}>
         <Text style={styles.titulo}>Adicionar Cartão </Text>
       </View>
@@ -142,9 +193,21 @@ export default function TelaCartao(props) {
           maxLength={11}
         />
       </View>
-      <TouchableOpacity onPress={() => addNewCart()} style={styles.viewButton}>
+      <View style={styles.RadioButton}>
+            <RadioForm
+              radio_props={itensCard}
+              initial={0}
+              onPress={item => {
+                console.log(item)
+              setBandeiraSelecionada(item);
+              }}
+              buttonColor={COR.verdeFosco}
+            />
+          </View>
+      <TouchableOpacity onPress={() => addNewCart()} style={[styles.viewButton,{marginTop:20}]}>
         <Text style={styles.buttonText}>Salvar</Text>
       </TouchableOpacity>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -186,11 +249,11 @@ const styles = StyleSheet.create({
     width: '65%',
     // width: 200,
     height: 40,
-    fontSize: 20,
+    lineHeight: 10,
+    fontSize: 15,
     fontWeight: '200',
     paddingHorizontal: 18,
     borderWidth: 1,
-    lineHeight:20,
     borderColor: COR.verdeFosco,
     borderRadius: 8,
     marginVertical: 5,
@@ -199,8 +262,8 @@ const styles = StyleSheet.create({
     width: '40%',
     // width: 200,
     height: 40,
-    fontSize: 20,
-    lineHeight:20,
+    fontSize: 15,
+    lineHeight: 10,
     fontWeight: '200',
     paddingHorizontal: 18,
     borderWidth: 1,
@@ -228,5 +291,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '500',
     color: COR.branco,
+  },
+  RadioButton: {
+    marginVertical: 10,
   },
 });

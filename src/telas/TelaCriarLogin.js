@@ -49,6 +49,16 @@ export default function TelaCriarLogin({navigation}){
          setTimeout(() => {
             setErrou(false)
         }, 1500);
+        Alert.alert(
+          "Informações faltando",
+          "Complete todos os campos com pelo menos 3 caracteres!",
+          [
+            {
+              text: "Ok",
+              onPress: () => (null)
+            },
+          ]
+        );
       }else{
         var params = {
            firstName: usuarioNome,
@@ -56,35 +66,31 @@ export default function TelaCriarLogin({navigation}){
            email: usuarioLogin,
            password: senhaLogin,
          }
-        try{
-               const resp = await axios.post(Config.API_CRIA_USER,
-                  params) 
-                  Alert.alert(
-                    "Usuário Criado",
-                    "O usuário foi adicionado, faça login para entrar em sua conta!",
-                    [
-                      {
-                        text: "Entrar",
-                        onPress: () => (navigation.navigate("Entrar"))
-                      },
-                    ]
-                  );
-              
-               }catch(error){
-                  console.log(error)
-
+               axios.post(Config.API_CRIA_USER,
+                  params).then((resp)=>{
+                    console.log(resp)
+                    Alert.alert(
+                      "Usuário Criado",
+                      "O usuário foi adicionado, faça login para entrar em sua conta!",
+                      [
+                        {
+                          text: "Entrar",
+                          onPress: () => (navigation.navigate("Entrar"))
+                        },
+                      ]
+                    );
+                    })
+                  
+               .catch((error)=>{
+                      console.log(error)
                       Alert.alert(
                        "Email já existente",
                        "O Email informado já existe",
                      );
-                    
-      
-                    
-    
-                
-               }
-         }
+               })
+              
         }
+      }
          
       return(
           <ImageBackground source={fundoCadastro}
@@ -114,7 +120,7 @@ export default function TelaCriarLogin({navigation}){
                returnKeyType="next"
                blurOnSubmit={false}
               placeholder="Digite Usuário"
-              placeholderTextColor={COR.cinza}
+              placeholderTextColor={Errou? COR.vermelho :COR.cinza}
               multiline={false}
               autoComplete={"username"}
               maxLength={35}
@@ -148,7 +154,7 @@ export default function TelaCriarLogin({navigation}){
                returnKeyType="next"
                blurOnSubmit={false}
               placeholder="Digite Usuário"
-              placeholderTextColor={COR.cinza}
+              placeholderTextColor={Errou? COR.vermelho:COR.cinza}
               multiline={false}
               autoComplete={"username"}
               maxLength={35}
@@ -160,7 +166,7 @@ export default function TelaCriarLogin({navigation}){
                 marginRight:5,
                 fontSize:20,
                 marginVertical:3,
-                color:COR.preto
+                color:Errou? COR.vermelho:COR.preto
               
           }}
         />
@@ -182,7 +188,7 @@ export default function TelaCriarLogin({navigation}){
                returnKeyType="next"
                blurOnSubmit={false}
               placeholder="Digite Usuário"
-              placeholderTextColor={COR.cinza}
+              placeholderTextColor={Errou? COR.vermelho:COR.cinza}
               multiline={false}
               autoComplete={"username"}
               maxLength={35}
@@ -194,7 +200,7 @@ export default function TelaCriarLogin({navigation}){
                 marginRight:5,
                 fontSize:20,
                 marginVertical:3,
-                color:COR.preto
+                color:Errou? COR.vermelho:COR.preto
               
           }}
         />
@@ -215,7 +221,7 @@ export default function TelaCriarLogin({navigation}){
                   returnKeyType="next"
                   blurOnSubmit={false}
                   placeholder="Digite Senha"
-                  placeholderTextColor={COR.cinza}
+                  placeholderTextColor={Errou? COR.vermelho:COR.cinza}
                   multiline={false}
                   autoComplete={"password"}
                   maxLength={30}
@@ -228,7 +234,7 @@ export default function TelaCriarLogin({navigation}){
                       fontSize:20,
                       width:230,
                       marginVertical:3,
-                      color:COR.preto
+                      color:Errou? COR.vermelho:COR.preto
                       
               }}
           />

@@ -30,6 +30,8 @@ export default function TelaConta(props) {
 
   const [sobrenome, setSobrenome] = useState('');
 
+  const [email, SetEmail] = useState('');
+
   const [telefone, setTelefone] = useState('');
 
   const [dataNascimento,setDataNascimento] = useState('');
@@ -171,6 +173,7 @@ export default function TelaConta(props) {
           setGetUsuario(response.data)
           setNome(response.data.firstName)
           setSobrenome(response.data.lastName);
+          SetEmail(response.data.email)
         }).catch((e)=>console.log(e))
       
     }
@@ -190,8 +193,11 @@ export default function TelaConta(props) {
         <View>
           <Text style={styles.info}>{getUsuario.firstName}</Text>
         </View>
-        <Text style={styles.info}>{getUsuario.email}</Text>
+        <Text style={styles.info}>{getUsuario.user.email}</Text>
       </View>
+      <TouchableOpacity style={styles.botaoVaiParaOHistorico}>
+      <Text style={styles.buttonText}>Histórico de Compras</Text>
+      </TouchableOpacity>
 
       <View style={styles.linha} />
       <View style={styles.viewDados}>
@@ -371,4 +377,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COR.branco,
   },
+  botaoVaiParaOHistorico:{
+    width: '30%',
+    alignItems: 'center',
+    backgroundColor: COR.verdeFosco,
+    height:35,
+    marginTop:10,
+    marginBottom:10,
+    padding: 5,
+    borderRadius: 8,
+  }
 });
