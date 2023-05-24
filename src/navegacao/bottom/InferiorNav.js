@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PrincipalNavegacao, SecundariaNavegacao, TerceiraNavegacao } from "../stack/SuperiorNav.js"; 
+import { PrincipalNavegacao} from "../stack/SuperiorNav.js"; 
 
 import COR from "../../assets/CSS/COR";
 import inicio from '../../assets/icons/inicio.png';
@@ -9,6 +9,8 @@ import logadoIMG from '../../assets/icons/logado.png';
 import deslogadoIMG from '../../assets/icons/deslogado.png';
 import chave from '../../assets/icons/chave.png';
 import { Image } from "react-native";
+import TelaLogin from "../../telas/TelaLogin.js";
+import TelaChaves from "../../telas/TelaChaves.js";
 
 const Tab = createBottomTabNavigator();
 
@@ -57,13 +59,13 @@ export default function InferiorNav ({navigation}){
                 style={{ width: 30, height: 30 }}
                 source={inicio}/>)}}}
           />
-          <Tab.Screen name="Login" component={SecundariaNavegacao} initialParams={{navigation:navigation}} options={{
+          <Tab.Screen name="Login" component={TelaLogin} initialParams={{navigation:navigation}} options={{
           tabBarLabel: 'Login',tabBarIcon: () => {
             return (<Image 
                 style={{ width: 30, height: 30 }}
                 source={logado == 0? deslogadoIMG : logadoIMG}/>)}}}
                 />
-          <Tab.Screen name="Chaves" component={TerceiraNavegacao} options={{
+          <Tab.Screen name="Chaves" component={TelaChaves} options={{
           tabBarLabel: 'Chaves',tabBarIcon: () => {
             return (<Image
                 style={{ width: 30, height: 30 }}

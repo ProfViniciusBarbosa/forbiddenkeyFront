@@ -71,8 +71,8 @@ export default function TelaJogo({route}){
                 }
                 else{
                     Alert.alert(
-                        "Erro! Cadastro nescessario para concluir ação ", "Nescessario faze login para processeguir",
-                        [{ text: "OK", onPress: () => (null) }] 
+                        "Erro, Cadastro nescessario para concluir ação! ", "Nescessario fazer login para prosseguir...",
+                        [{ text: "OK", onPress: () => (route.params.nav.navigate('Login')) }] 
                     )
                 }
             }).catch((error)=>{
@@ -87,11 +87,11 @@ export default function TelaJogo({route}){
                 }).catch((e)=>{
                     console.log(e)
                     Alert.alert(
-                        "Erro, operação não concluida!",
-                        "Erro: " + error,
+                        "Erro, Cadastro nescessario para prosseguir!",
+                        "Nescessario fazer login para prosseguir...",
                         [{
                             text: "OK",
-                           onPress: () => (null)
+                           onPress: () => (route.params.nav.navigate('Login'))
                        }]
                       )
                 })
@@ -125,7 +125,7 @@ export default function TelaJogo({route}){
                     { jogoGetById.name }
                 </Text>
             </View>
-            <ScrollView  style={{height:height,width:width,marginBottom:10}}>
+            <ScrollView  style={{height:height-170,width:width,marginBottom:10}}>
                 <View style={styles.imagemJogo}>
                     <Image style={{width:'100%',height:'100%'}} source={{uri:jogoGetById.imgUrl}}/>
                 </View>
@@ -155,9 +155,9 @@ export default function TelaJogo({route}){
             {
                 categories?
                 categories.map((game,key) =>(
-                    <TouchableOpacity onPress={ ()=> route.params.nav.navigate("Catalogo",{categoria:game.id,nav:route.params.nav})} key={key} style={styles.categoriasJogos}>
+                    <View key={key} style={styles.categoriasJogos}>
                         <Text style={styles.categoriasText}>{game.name}</Text>
-                    </TouchableOpacity>
+                    </View>
                 ))
                 :
                 null
@@ -171,17 +171,17 @@ export default function TelaJogo({route}){
 
             <View style={styles.linhaDivisoria} />
 
-                    <TouchableOpacity onPress={()=>route.params.nav.navigate("Catalogo",{desenvolvedora:desenvolvedora})} style={[styles.categoriasJogos,{alignSelf:'center',marginBottom:20,width:300}]}>
+                    <View style={[styles.categoriasJogos,{alignSelf:'center',marginBottom:20,width:300}]}>
                         <Text style={styles.categoriasText}>{desenvolvedora}</Text>
-                    </TouchableOpacity>
+                    </View>
 
             <View style={[styles.categoriaFormat,{marginBottom:10,width:200}]}>
                  <Text style={styles.categoriasTitulo}>Distribuidora</Text>
             </View>
             <View style={styles.linhaDivisoria} />
-                    <TouchableOpacity onPress={()=>route.params.nav.navigate("Catalogo",{distribuidora:distribuidora})} style={[styles.categoriasJogos,{alignSelf:'center',marginBottom:20,width:300}]}>
+                    <View style={[styles.categoriasJogos,{alignSelf:'center',marginBottom:20,width:300}]}>
                         <Text style={styles.categoriasText}>{distribuidora}</Text>
-                    </TouchableOpacity>
+                    </View>
             </ScrollView>
         </View>
     )
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
       backgroundColor:COR.verdeFosco,
       borderBottomLeftRadius:8,
       borderBottomRightRadius:8,
-      marginBottom:-20,
+      marginBottom:0,
     },
     imagemJogo:{
         width: width-20,

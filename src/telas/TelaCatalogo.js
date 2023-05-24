@@ -48,6 +48,7 @@ export default function TelaCatalogo({route}){
       }
     
       const [categoria, setCategoria] = useState('');
+      const [textoPesquisa,setTextoPesquisa] = useState('');
 
       const [openCategoria, setOpenCategoria] = useState(false);
     //route.params.distribuidora? route.params.distribuidora : 
@@ -84,11 +85,6 @@ export default function TelaCatalogo({route}){
             
       },[getCompletoCategorias])
 
-      // useEffect(()=>{
-      //   if(route.params.categoria != undefined){
-      //     setCategoria(route.params.categoria)
-      //   }
-      // },[route.params.categoria])
       useEffect(()=>{
         console.log(categoria)
       },[categoria])
@@ -174,19 +170,22 @@ export default function TelaCatalogo({route}){
             <Text style={styles.titulo}>Tela catalogo</Text>
           </View>
           <View style={styles.pesquisa}>
-            <TouchableOpacity style={styles.icon}>
+            <View style={styles.icon}>
               <Image source={SearchImg} />
-            </TouchableOpacity>
+            </View>
             
             <TextInput
               style={{ width: '100%', height: 48 }}
               placeholder="Pesquisar"
+              onChangeText={(value) => setTextoPesquisa(value)}
+              value={textoPesquisa}
             />
             <TouchableOpacity onPress={() =>{
               setCategoria('')
               setDistribuidora('')
               setDesenvolvedora('')
               setPreco('')
+              setTextoPesquisa('')
             }} style={{marginHorizontal:-20}}>
               <Image source={RemoveImg} />
             </TouchableOpacity>
@@ -253,13 +252,20 @@ export default function TelaCatalogo({route}){
           {
             gamesGet?
             gamesGet.filter((game) =>{
+               
               //1 categoria
               if(categoria != '' && Desenvolvedora == '' && distribuidora  == '' && preco =='')
               {
                 for(let i = 0;i< Object.keys(game.categories).length;i++)
                {
                 if(game.categories[i].name == itensCategoria[categoria-1].label){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
               }
               }
@@ -268,7 +274,13 @@ export default function TelaCatalogo({route}){
               {
                 if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
                 {
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
               }
               //3 distribuidora
@@ -276,20 +288,44 @@ export default function TelaCatalogo({route}){
               {
                 if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
                 {
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
               }
               //4 preco
               if(categoria == '' && Desenvolvedora == '' && distribuidora  == '' && preco !='')
               {
                 if(itensPreco[preco-1].value == 1 && game.price <=20){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
                 else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
                 else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
               }
             }
             //5 categoria + desenvolvedora
@@ -299,7 +335,13 @@ export default function TelaCatalogo({route}){
              {
               if(game.categories[i].name == itensCategoria[categoria-1].label){
                 if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
               }
             }
@@ -311,7 +353,13 @@ export default function TelaCatalogo({route}){
              {
               if(game.categories[i].name == itensCategoria[categoria-1].label){
                 if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
               }
             }
@@ -323,13 +371,31 @@ export default function TelaCatalogo({route}){
              {
               if(game.categories[i].name == itensCategoria[categoria-1].label){
                 if(itensPreco[preco-1].value == 1 && game.price <=20){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
                 else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
                 else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
               }
               }
             }
@@ -340,7 +406,13 @@ export default function TelaCatalogo({route}){
               if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
               {
                 if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
-                  return game
+                  if(textoPesquisa != ''){
+                    if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                      return game
+                    }
+                  }else{
+                    return game
+                  }
                 }
               }
             }
@@ -350,13 +422,31 @@ export default function TelaCatalogo({route}){
               if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label)
               { 
                   if(itensPreco[preco-1].value == 1 && game.price <=20){
-                    return game
+                    if(textoPesquisa != ''){
+                      if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                        return game
+                      }
+                    }else{
+                      return game
+                    }
                   }
                   else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                    return game
+                    if(textoPesquisa != ''){
+                      if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                        return game
+                      }
+                    }else{
+                      return game
+                    }
                   }
                   else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                    return game
+                    if(textoPesquisa != ''){
+                      if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                        return game
+                      }
+                    }else{
+                      return game
+                    }
                 }
               }
             }
@@ -366,13 +456,31 @@ export default function TelaCatalogo({route}){
               if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
               {
                   if(itensPreco[preco-1].value == 1 && game.price <=20){
-                    return game
+                    if(textoPesquisa != ''){
+                      if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                        return game
+                      }
+                    }else{
+                      return game
+                    }
                   }
                   else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                    return game
+                    if(textoPesquisa != ''){
+                      if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                        return game
+                      }
+                    }else{
+                      return game
+                    }
                   }
                   else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                    return game
+                    if(textoPesquisa != ''){
+                      if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                        return game
+                      }
+                    }else{
+                      return game
+                    }
                 }
                 }
               }
@@ -385,7 +493,13 @@ export default function TelaCatalogo({route}){
 
                   if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label){
                     if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                   }
                 }
@@ -400,13 +514,31 @@ export default function TelaCatalogo({route}){
 
                   if(game.developerDTO.name == itensDesenvolvedora[Desenvolvedora-1].label){
                     if(itensPreco[preco-1].value == 1 && game.price <=20){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                   }
                   }
                 }
@@ -422,13 +554,31 @@ export default function TelaCatalogo({route}){
                   if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label)
                   {
                     if(itensPreco[preco-1].value == 1 && game.price <=20){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                   }
                 }
@@ -442,13 +592,31 @@ export default function TelaCatalogo({route}){
                 {
                   if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
                     if(itensPreco[preco-1].value == 1 && game.price <=20){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                   }
                   }
                 }
@@ -463,21 +631,45 @@ export default function TelaCatalogo({route}){
                 {
                   if(game.distributorDTO.name == itensDistribuidora[distribuidora-1].label){
                     if(itensPreco[preco-1].value == 1 && game.price <=20){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 2 && game.price <=50){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
                     }
                     else if(itensPreco[preco-1].value == 3 && game.price <=100){
-                      return game
+                      if(textoPesquisa != ''){
+                        if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                          return game
+                        }
+                      }else{
+                        return game
+                      }
+                     
                   }
                   }
                 }
                 }
               }
               }
-                  
-              //16 Caso nenhuma das condições estiver preenchidas
+              //16 filtro de texto
+              if(textoPesquisa != '' && categoria == '' && Desenvolvedora == '' && distribuidora  == '' && preco ==''){
+                if(game.name.toLowerCase().includes(textoPesquisa.toLowerCase())){
+                  return game
+                }
+              }
+              //17 Caso nenhuma das condições estiver preenchidas
                   else if (categoria == '' && Desenvolvedora == '' && distribuidora == '' && preco == '')
                   {
                     return game

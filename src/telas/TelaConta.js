@@ -156,7 +156,7 @@ export default function TelaConta(props) {
         console.log(response)
 
         setGetUsuario(response.data)
-        
+        SetEmail(response.data.user.email)
         setNome(response.data.firstName)
         setSobrenome(response.data.lastName);
         setDataNascimento(response.data.birthDate)
@@ -181,7 +181,6 @@ export default function TelaConta(props) {
 
   return (
     <ScrollView style={styles.ScrollTela}>
-          
     <View style={styles.center}>
       <View style={styles.viewtitulo}>
         <Text style={styles.titulo}>Tela Perfil</Text>
@@ -193,12 +192,20 @@ export default function TelaConta(props) {
         <View>
           <Text style={styles.info}>{getUsuario.firstName}</Text>
         </View>
-        <Text style={styles.info}>{getUsuario.user.email}</Text>
+        <Text style={styles.info}>{email}</Text>
       </View>
-      <TouchableOpacity style={styles.botaoVaiParaOHistorico}>
-      <Text style={styles.buttonText}>Histórico de Compras</Text>
-      </TouchableOpacity>
+      {
+         role == 'ROLE_ADMIN'?
+         <TouchableOpacity style={styles.botaoVaiParaOHistorico} onPress={()=>props.navigation.navigate("ADMPedidos")}>
+         <Text style={styles.buttonText}>Histórico de Clientes</Text>
+         </TouchableOpacity>
+         :
+        <TouchableOpacity style={styles.botaoVaiParaOHistorico} onPress={()=>props.navigation.navigate("Pedidos")}>
+        <Text style={styles.buttonText}>Histórico de Compras</Text>
+        </TouchableOpacity>
 
+      }
+     
       <View style={styles.linha} />
       <View style={styles.viewDados}>
         <Text style={styles.label2}>Editar dados:</Text>
@@ -373,18 +380,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: {
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: '500',
     color: COR.branco,
   },
   botaoVaiParaOHistorico:{
-    width: '30%',
+    width: '60%',
     alignItems: 'center',
-    backgroundColor: COR.verdeFosco,
-    height:35,
+    justifyContent:'center',
+    backgroundColor: 'green',
+    height:65,
     marginTop:10,
     marginBottom:10,
-    padding: 5,
     borderRadius: 8,
   }
 });

@@ -2,7 +2,7 @@ import React from 'react';
 import { View,Text, TouchableOpacity, Image } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 import COR from '../assets/CSS/COR';
-import menu from '../assets/icons/menu.png';
+// import menu from '../assets/icons/menu.png';
 import pesquisa from '../assets/icons/pesquisa.png';
 import carrinho from '../assets/icons/carrinho.png';
 

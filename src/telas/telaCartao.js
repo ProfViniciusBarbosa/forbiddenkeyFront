@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from '../componentes/customAxios';
 import Config from '../assets/mocks/Config';
 import RadioForm from 'react-native-simple-radio-button';
+import { useNavigation } from '@react-navigation/native';
 
 export default function TelaCartao(props) {
   
@@ -33,7 +34,9 @@ export default function TelaCartao(props) {
   
   const [itensCard, setItensCard] = useState([]);
 
-  const [bandeiraSelecionada,setBandeiraSelecionada] = useState()
+  const [bandeiraSelecionada,setBandeiraSelecionada] = useState(1)
+
+  const navigation = useNavigation();
 
   useEffect(()=>{
     getBanners();
@@ -116,7 +119,7 @@ export default function TelaCartao(props) {
           [
             {
               text: "OK",
-              onPress: () => (props.navigation.navigate("Catalogo"))
+              onPress: () => (props.navigation.navigate("Catalogo",{nav:navigation}))
             },
           ]
         );

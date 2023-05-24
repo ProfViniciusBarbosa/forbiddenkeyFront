@@ -32,6 +32,8 @@ export default function TelaCart({navigation}) {
 
   const [card, setCard] = useState([{}])
 
+  const [permitirCompra,setPermitirCompra] = useState(false)
+
   const [itemRemove, setItemRemove] = useState(false)
 
 
@@ -71,7 +73,8 @@ export default function TelaCart({navigation}) {
         let newArray = [];
 
         var quantidadeChaves = Object.keys(resp.data).length
-
+        if(quantidadeChaves>0){
+          setPermitirCompra(true)
         for(var i = 0; i < quantidadeChaves; i++){
           newArray.push({
             label: resp.data[i].bannerDTO.name,
@@ -80,7 +83,10 @@ export default function TelaCart({navigation}) {
 
             setItensCard(newArray)
         }
-        }  
+        }
+      }else{
+        setPermitirCompra(false)
+      }
     }).catch((e)=>{console.log(e)})     
   }
 
@@ -154,6 +160,57 @@ export default function TelaCart({navigation}) {
     })
   }
 
+  async function finalizaCompra(){
+
+    let token = await AsyncStorage.getItem('token');
+    
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+    if(permitirCompra == false){
+      Alert.alert(
+        "OPS!",
+        "Você não colocou uma forma de pagamento, adicione uma para poder comprar!.",
+        [
+          {
+            text: "OK",onPress: ()=> null
+          },
+        ]
+      )
+    }else{
+    Alert.alert(
+      "Finalizar compra?!",
+      "Você está prestes a finalizar sua compra, deseja prosseguir?",
+      [
+        {text: 'Sim', onPress: () => {
+            axios.post(Config.API_FINALIZA_COMPRA+'/'+value,null, config)
+            .then(() => {
+              Alert.alert(
+                "Compra Finalizada!",
+                "Aguarde a aprovação, você pode acompanha-lo pelo hisórico de compra.",
+                [
+                  {
+                    text: "OK",onPress: ()=> navigation.navigate("Entrar")
+                  },
+                ]
+              );
+            })
+            .catch((e)=>{Alert.alert(
+              "OPS!",
+              "Você não selecionou o método de pagamento...Selecione uma para prosseguir!",
+              [
+                {
+                  text: "OK",onPress: ()=> null
+                },
+              ]
+            );});}
+          }
+          , {text: 'Não', onPress: () => null},
+     ],
+     { cancelable: false }
+    );
+  }}
+
   return (
     <ScrollView style={styles.center}>
       <View style={{alignItems: 'center',marginBottom:20}}>
@@ -209,7 +266,8 @@ export default function TelaCart({navigation}) {
           <View style={styles.RadioButton}>
             <RadioForm
               radio_props={itensCard}
-              initial={0}
+              animation={false}
+              initial={1}
               onPress={item => {
               console.log(item)
               setValue(item);
@@ -229,7 +287,7 @@ export default function TelaCart({navigation}) {
 
       <View style={styles.linha} />
 
-      <TouchableOpacity style={styles.viewComprar}>
+      <TouchableOpacity onPress={()=>{finalizaCompra()}}style={styles.viewComprar}>
         <Text style={styles.Comprar}>Finalizar compra</Text>
       </TouchableOpacity>
       </View>
