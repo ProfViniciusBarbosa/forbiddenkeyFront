@@ -15,6 +15,7 @@ import RemoveImg from '../assets/icons/remover.png';
 import COR from '../assets/CSS/COR';
 import Config from '../assets/mocks/Config';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -56,6 +57,64 @@ export default function TelaCadastroJogo({navigation}) {
   const [openCategoria4, setOpenCategoria4] = useState(false);
   const [itensCategoria4, setItensCategoria4] = useState([]);
 
+  const [imagemUri, setimagemUri] = useState('');
+
+  var formularioJogo = {
+    name: nome,
+    quantity: quantidade,
+    description: descricao,
+    price: preco,
+    developerDTO: {
+        id: Desenvolvedora
+    },
+    distributorDTO:{
+        id: distribuidora
+    },
+    launchDate: "2018-11-28T00:00:00Z",
+    imgUrl: imagemUri,
+    categories: [
+        {
+            id: categoria,
+            name: categoria? itensCategoria[categoria-1].label : '',
+            products: []
+        },
+        {
+            id: categoria2,
+            name: categoria2? itensCategoria[categoria2-1].label:'',
+            products: []
+        },
+        
+        {
+          id: categoria3,
+          name: categoria3? itensCategoria[categoria3-1].label : '',
+          products: []
+      },
+      {
+          id: categoria4,
+          name: categoria4? itensCategoria[categoria4-1].label : '',
+          products: []
+      }
+    ]
+}
+
+
+async function enviaDados(){
+
+  let token = await AsyncStorage.getItem('token');
+    
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+  
+  if( nome != '' && quantidade != '' && descricao != '' &&
+  preco != '' && distribuidora != '' && Desenvolvedora != '' && imagemUri != '' && categoria != ''){
+    console.log(formularioJogo.categories)
+    axios.post(Config.API_CRIA_JOGOS,formularioJogo,config)
+    .then(()=>{console.log("Cadastrou o game")})
+    .catch((e)=>{console.log(e)})
+  }
+ 
+}
 
   useEffect(()=>{
     GetCategorias();
@@ -132,7 +191,6 @@ useEffect(()=>{
         
   },[getCompletoCategorias3])
 // Categoria 03
-
 
 //Categoria 04
 useEffect(()=>{
@@ -291,7 +349,8 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
           <Text style={styles.label}>Imagem: </Text>
           <TextInput
             placeholder="https://imagem.png"
-            onChangeText={value => setDesenvolvedor(value)}
+            value={imagemUri}
+            onChangeText={value => setimagemUri(value)}
             style={styles.input}
           />
 
@@ -376,7 +435,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
           </View>
         </View>
 
-        <TouchableOpacity style={styles.viewButton}>
+        <TouchableOpacity onPress={()=>enviaDados()} style={styles.viewButton}>
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
       </View>

@@ -21,10 +21,13 @@ import COR from '../assets/CSS/COR';
 import axios from '../componentes/customAxios';
 import Config from '../assets/mocks/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 export default function TelaCart({navigation}) {
+
+  const navigation1 = useNavigation();
 
   const [value, setValue] = useState('');
 
@@ -90,7 +93,6 @@ export default function TelaCart({navigation}) {
     }).catch((e)=>{console.log(e)})     
   }
 
-
   async function GetCurrentCart(){
     let role = await AsyncStorage.getItem('tipoUser');
     let token = await AsyncStorage.getItem('token');
@@ -114,7 +116,23 @@ export default function TelaCart({navigation}) {
                },
              ]
             );
-          }}).catch((e)=>console.log(e))
+          }}).catch((e)=>{
+          if(e == 'AxiosError: Request failed with status code 404'){
+
+          }else{
+            Alert.alert(
+              "Não é possivel adicionar ou vizualizar itens do carrinho !",
+              "Logue na aplicação para vizualizar e adiconar itens ao carrinho!",
+              [
+                {
+                  text: "OK",
+                  onPress: () => (navigation1.navigate("Entrar"))
+                },
+              ]
+            );
+          }
+            
+          })
    
       }else{
         setCurrentCart([{}])
@@ -124,7 +142,7 @@ export default function TelaCart({navigation}) {
           [
             {
               text: "OK",
-              onPress: () => (navigation.navigate("Entrar"))
+              onPress: () => (navigation1.navigate("Entrar"))
             },
           ]
         );
@@ -190,7 +208,7 @@ export default function TelaCart({navigation}) {
                 "Aguarde a aprovação, você pode acompanha-lo pelo hisórico de compra.",
                 [
                   {
-                    text: "OK",onPress: ()=> navigation.navigate("Entrar")
+                    text: "OK",onPress: ()=> navigation1.navigate("Entrar")
                   },
                 ]
               );

@@ -40,21 +40,13 @@ export default function TelaConta(props) {
 
   const [role, setRole] = useState('');
 
-  function sairTela (){
-    removeItemValue();
+  async function sairTela (){
+    await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem('tipoUser');
+    await AsyncStorage.setItem("logado","false");
     props.setLogado("false");
 
   }
-  async function removeItemValue() {
-    try {
-        await AsyncStorage.removeItem('token');
-        await AsyncStorage.removeItem('tipoUser');
-        await AsyncStorage.setItem("logado","false");
-        
-    }
-    catch(exception) {   
-    }
-}
 
   async function atulizaInformacoes() {
 

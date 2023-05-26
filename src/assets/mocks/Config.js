@@ -16,6 +16,9 @@ const Config = {
     API_PEGA_BANDEIRAS_CARTAO: "http://192.168.0.105:8080/banners",
     API_FINALIZA_COMPRA: "http://192.168.0.105:8080/orders",
     API_ATUALZA_ORDER_STATUS: "http://192.168.0.105:8080/orders/",
+    API_GET_GAMES_COSTUMER: "http://192.168.0.105:8080/customerGames",
+    API_SEE_GAME_KEY:"http://192.168.0.105:8080/customerGames/",
+    API_CRIA_JOGOS:"http://192.168.0.105:8080/products",
 
     TIMEOUT_REQUEST: 5000,
     HEADER_REQUEST: {

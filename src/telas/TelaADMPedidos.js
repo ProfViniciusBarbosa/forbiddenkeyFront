@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -9,15 +9,80 @@ import {
 import DropDownPicker from 'react-native-dropdown-picker';
 
 import COR from '../assets/CSS/COR';
+import axios from 'axios';
+import Config from '../assets/mocks/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TelaPedidosAdm() {
   const [status, setStatus] = useState('[]');
   const [openStatus, setOpenStatus] = useState(false);
 
+  const [temItens,setTemItens] = useState(false);
+
+  const [orders, setOrdes] = useState([{}]);
+
+  const [produtos, setProdutos] = useState([{}]);
+
   const [itensStatus, setItensStatus] = useState([
-    { label: 'Processamento', value: '1' },
-    { label: 'Finalizado', value: '2' },
+    { label: 'CANCELADO', value: '1' },
+    { label: 'FINALIZADO', value: '2' },
   ]);
+
+  useEffect(()=>{
+    getPedidos();
+  },[])
+
+  async function getPedidos(){
+
+    let token = await AsyncStorage.getItem('token');
+
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+    
+    axios.get(Config.API_FINALIZA_COMPRA,config)
+    .then((response)=> {
+
+      console.log(response.data[0])
+      
+      if(Object.keys(response.data).length > 0){
+
+        setTemItens(true)
+
+        let newArray = [];
+        let arrayProdutos = [];
+        const quantidadeChaves = Object.keys(response.data).length
+
+        for(var i = 0; i < quantidadeChaves; i++){
+
+          newArray.push({
+            id: response.data[i].id,
+            protocolo: response.data[i].protocol,
+            data: response.data[i].orderCreatDate,
+            produtos: Object.keys(response.data[i].cartDTO.products).length,
+            pagamento: response.data[i].cardDTO.bannerDTO.name,
+            valor: response.data[i].cartDTO.totalValue,
+            status: response.data[i].orderStatus
+          })
+          for(var j = 0; j < newArray[i].produtos ; j++){
+
+          arrayProdutos.push({
+            comanda:i,
+            produto: response.data[i].cartDTO.products[j]
+        })
+
+      }
+      }
+            setOrdes(newArray)
+            setProdutos(arrayProdutos)
+        }else{
+          setTemItens(false);
+        }
+     
+    })
+    .catch((e)=>{console.log('deu ruim'+e)})
+  
+  }
 
   return (
     <ScrollView>

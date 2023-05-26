@@ -42,29 +42,42 @@ const PrincipalNavegacao = () => {
   );
 }
 
-// const SecundariaNavegacao = () => {
-//   return (
-//     <Stack.Navigator screenOptions={screenOptionStyle}>
-//       <Stack.Screen name="Entrar" component={TelaLogin} />
-//       <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
-//       <Stack.Screen name="Pedidos" component={TelaPedidos} />
-//       <Stack.Screen name="ADMPedidos" component={TelaPedidosAdm} />
-//       <Stack.Screen name="Conta" component={TelaConta} />
-//     </Stack.Navigator>
-//   );
-// }
-// const TerceiraNavegacao = () => {
-//   return (
-//     <Stack.Navigator screenOptions={screenOptionStyle}>
-     
-//       <Stack.Screen name="Entrar" component={TelaLogin} />
-//       <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
-//       <Stack.Screen name="Pedidos" component={TelaPedidos} />
-//       <Stack.Screen name="ADMPedidos" component={TelaPedidosAdm} />
-//       <Stack.Screen name="Conta" component={TelaConta} />
-        //  <Stack.Screen name="Chave" component={TelaChaves} /> 
-//     </Stack.Navigator>
-//   );
-// }
-//, SecundariaNavegacao, TerceiraNavegacao 
-export { PrincipalNavegacao };
+const SecundariaNavegacao = () => {
+  return (
+    <Stack.Navigator screenOptions={screenOptionStyle}>
+      <Stack.Screen name="Entrar" component={TelaLogin} />
+      <Stack.Screen name="Catalogo" component={TelaCatalogo} />
+      <Stack.Screen name="Jogo" component={TelaJogo} />
+      <Stack.Screen name="Carrinho" component={TelaCarinho} />
+      <Stack.Screen name="Cartao" component={TelaCartao} />
+      <Stack.Screen name="Iniciar" component={TelaInicial} />
+      <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
+      <Stack.Screen name="Conta" component={TelaConta} />
+      <Stack.Screen name="Pedidos" component={TelaPedidos} />
+      <Stack.Screen name="ADMPedidos" component={TelaPedidosAdm} />
+      <Stack.Screen name="ADMCadastra" component={TelaCadastroJogo} />
+      <Stack.Screen name="Chave" component={TelaChaves} />
+    </Stack.Navigator>
+  );
+}
+const TerceiraNavegacao = () => {
+  return (
+    <Stack.Navigator screenOptions={screenOptionStyle}>
+  <Stack.Screen name="Chave" component={TelaChaves} />
+      <Stack.Screen name="Catalogo" component={TelaCatalogo} />
+      <Stack.Screen name="Jogo" component={TelaJogo} />
+      <Stack.Screen name="Carrinho" component={TelaCarinho} />
+      <Stack.Screen name="Cartao" component={TelaCartao} />
+      <Stack.Screen name="Entrar" component={TelaLogin} />
+      <Stack.Screen name="CriarLogin" component={TelaCriarLogin} />
+      <Stack.Screen name="Conta" component={TelaConta} />
+      <Stack.Screen name="Pedidos" component={TelaPedidos} />
+      <Stack.Screen name="ADMPedidos" component={TelaPedidosAdm} />
+      <Stack.Screen name="ADMCadastra" component={TelaCadastroJogo} />
+      <Stack.Screen name="Iniciar" component={TelaInicial} />
+ 
+    </Stack.Navigator>
+  );
+}
+
+export { PrincipalNavegacao , SecundariaNavegacao, TerceiraNavegacao  };

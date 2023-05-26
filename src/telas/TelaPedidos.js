@@ -130,7 +130,7 @@ export default function TelaPedidos() {
   
               <View style={styles.viewRow}>
                 <Text>Data:  </Text>
-                <Text style={styles.info}>{pedido.data.substring(pedido.data,10)}</Text>
+                <Text style={styles.info}>{pedido.data?pedido.data.substring(pedido.data,10):null}</Text>
               </View>
             </View>
   

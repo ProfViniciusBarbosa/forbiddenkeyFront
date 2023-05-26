@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PrincipalNavegacao} from "../stack/SuperiorNav.js"; 
+import { PrincipalNavegacao, SecundariaNavegacao, TerceiraNavegacao} from "../stack/SuperiorNav.js"; 
 
 import COR from "../../assets/CSS/COR";
 import inicio from '../../assets/icons/inicio.png';
 import logadoIMG from '../../assets/icons/logado.png';
+import admLogado from '../../assets/icons/admLogado.png';
 import deslogadoIMG from '../../assets/icons/deslogado.png';
 import chave from '../../assets/icons/chave.png';
 import { Image } from "react-native";
@@ -28,15 +29,16 @@ export default function InferiorNav ({navigation}){
 
   useEffect(()=>{
     async function PegaLogin(){
-      const tipoDeLogin = await AsyncStorage.getItem('logado'); 
-      if(tipoDeLogin == undefined || tipoDeLogin == null || tipoDeLogin == "false"){
-        if(logado!=0){
+      const tipoDeLogin = await AsyncStorage.getItem('tipoUser'); 
+      if(tipoDeLogin == undefined || tipoDeLogin == null ){
+        
             setLogado(0)
-        }
       }
       else{
-        if(logado!=1){
+        if(tipoDeLogin == "ROLE_CUSTOMER"){
           setLogado(1)
+      }else{
+        setLogado(2)
       }
       }
     }
@@ -49,6 +51,7 @@ export default function InferiorNav ({navigation}){
 
     return (
         <Tab.Navigator screenOptions={{
+            unmountOnBlur: true,
             tabBarActiveBackgroundColor:COR.cinza,
             tabBarActiveTintColor:COR.branco,
             headerShown:false,
@@ -59,13 +62,13 @@ export default function InferiorNav ({navigation}){
                 style={{ width: 30, height: 30 }}
                 source={inicio}/>)}}}
           />
-          <Tab.Screen name="Login" component={TelaLogin} initialParams={{navigation:navigation}} options={{
+          <Tab.Screen name="Login" component={SecundariaNavegacao} initialParams={{navigation:navigation}} options={{
           tabBarLabel: 'Login',tabBarIcon: () => {
             return (<Image 
                 style={{ width: 30, height: 30 }}
-                source={logado == 0? deslogadoIMG : logadoIMG}/>)}}}
+                source={logado == 0? deslogadoIMG : logado==1? logadoIMG : admLogado}/>)}}}
                 />
-          <Tab.Screen name="Chaves" component={TelaChaves} options={{
+          <Tab.Screen name="Chaves" component={TerceiraNavegacao} options={{
           tabBarLabel: 'Chaves',tabBarIcon: () => {
             return (<Image
                 style={{ width: 30, height: 30 }}
