@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from '../assets/mocks/Config';
 import React, { useEffect, useState } from 'react';
-import { View , Alert, StyleSheet , Dimensions, TouchableOpacity , ScrollView , Image, Text, BackHandler} from 'react-native';
+import { View , Alert, StyleSheet , Dimensions, TouchableOpacity , ScrollView , Image, Text, BackHandler, RefreshControl} from 'react-native';
 import axios  from '../componentes/customAxios';
 import COR from '../assets/CSS/COR';
 import BarraSuperior from '../componentes/BarraSuperior';
@@ -11,12 +11,23 @@ const { width , height} = Dimensions.get('window');
 
 
 export default function TelaChaves({ navigation }){
+
+    const [gamesCustomer, setgamesCustomer] = useState([]);
     
     const [role,setRole] = useState(async () => {
         const data = await AsyncStorage.getItem('tipoUser')
         setRole(data || null)
       }
     ); 
+
+    const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }
 
     useEffect(() => {
 
@@ -36,8 +47,6 @@ export default function TelaChaves({ navigation }){
         return () => backHandler.remove();
       }, []);
 
-      const [gamesCustomer, setgamesCustomer] = useState([{}]);
-
       async function gamesAll(){
 
         let token = await AsyncStorage.getItem('token');
@@ -47,9 +56,6 @@ export default function TelaChaves({ navigation }){
         };
 
         axios.get(Config.API_GET_GAMES_COSTUMER,config).then((response)=>{
-
-            console.log(response.data)
-
             setgamesCustomer(response.data)
             
         }).catch((e) => {
@@ -74,7 +80,8 @@ export default function TelaChaves({ navigation }){
                 text: 'Sim', onPress: () => {
                     axios.put(Config.API_SEE_GAME_KEY +id , null, config)
                     .then(()=>{
-                        console.log("Viu a chave" + id);
+                        gamesAll();
+                        onRefresh();
                     })
                     .catch((e)=>{console.log(e)})
                 }
@@ -96,25 +103,39 @@ export default function TelaChaves({ navigation }){
                     </Text>
                 </View>
 
-                <ScrollView style={styles.telaChave}>
+                <ScrollView style={styles.telaChave} 
+                refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
 
                     {
-                        gamesCustomer == [] || gamesCustomer == undefined?
+                        gamesCustomer.length < 1 || gamesCustomer == undefined?
                         <View>
                             <Text style={{alignSelf:'center',marginVertical:250, fontSize:26,textAlign:'center',color:COR.vinho,width:300}}>
-                            Lista de pedidos vazia!
+                            Lista de jogos vazia!
                             </Text>
                         </View>  
                         :
                         gamesCustomer != undefined && gamesCustomer != null?
                         gamesCustomer.map((games,key)=>(
                         <View key={key} style={styles.cardChave}>
-                            <Image source={{uri:games.imgUrl}}/>
-                            <View style={styles.caixaInferiorChave}>  
-                                <TouchableOpacity onPress={()=>{verJogos(games.id)}}>
-                                    <Text style={styles.textoBotaoRevelarChave}> Revelar Chave </Text>
-                                </TouchableOpacity>
-                            </View>
+                            <Image source={{uri:games.productDTO.imgUrl}} style={{height:180,width:width-60,marginVertical:15,borderRadius:8}}/>
+                            <Text style={{fontSize:20,fontWeight:'bold',marginBottom:2,color:COR.verdeFosco}}>{games.productDTO.name}</Text>
+                            <Text style={{fontSize:20,fontWeight:'bold'}}>CHAVE: {games.seen == true? games.activationKey :'*************'}</Text>
+                            
+                                {
+                                    games.seen == true?
+                                    <View style={{marginTop:10}}>
+                                        <Text style={[styles.textoBotaoRevelarChave,{color:COR.cinza}]}> Chave Revelada! </Text>
+                                    </View>
+                                    :
+                                    <View style={styles.caixaInferiorChave}>
+                                    <TouchableOpacity onPress={()=>{verJogos(games.id)}}>
+                                        <Text style={[styles.textoBotaoRevelarChave,{color:COR.vinho}]}> Revelar Chave </Text>
+                                    </TouchableOpacity>
+                                    </View>
+                                }
+                            
                         </View>
                         ))
                         :
@@ -151,18 +172,16 @@ const styles = StyleSheet.create({
 telaChave:{
     width:width-10,
     alignSelf:'center',
-    height:height,
-    marginBottom:10,
+    height:height*0.81,
 },
 cardChave:{
     width:width-30,
-    height:250,
+    height:350,
     alignSelf:'center',
+    alignItems:'center',
     marginTop:20,
     backgroundColor:COR.azulado,
     borderRadius:8,
-    flexDirection:'column-reverse',
-    shadowColor: COR.cinza,
     shadowOffset: {
         width: 0,
         height: 7,
@@ -170,9 +189,11 @@ cardChave:{
     shadowOpacity: 0.43,
     shadowRadius: 9.51,
     elevation: 15,
+    marginBottom:10
 },
 caixaInferiorChave:{
-    height:50,
+    marginTop:10,
+    height:40,
     width:200,
     alignSelf:'center',
     marginBottom:20,
@@ -197,6 +218,6 @@ textoChaves:{
   textoBotaoRevelarChave:{
     fontSize:25,
     fontWeight:'bold',
-
+    textAlign:'center',
   },
 })

@@ -5,6 +5,8 @@ import COR from '../assets/CSS/COR';
 import Config from '../assets/mocks/Config';
 import BarraSuperior from '../componentes/BarraSuperior';
 import CardHorizontal from '../componentes/CardHorizontal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const { width , height} = Dimensions.get('window');
 
@@ -16,6 +18,8 @@ export default function TelaInicial ({ navigation }){
 
   const [banner, setBanner] = useState([{}]);
 
+  const navigation1 = useNavigation();
+  
   useEffect(()=>{
     GetJogos();
     GetBanner();
@@ -30,16 +34,33 @@ export default function TelaInicial ({ navigation }){
     };
 
     const EnviarDadosTelaJogoENavegar = (idJogo) =>{
-      navigation.navigate("Jogo",{idJogo:idJogo,nav:navigation});
+      navigation1.navigate("Jogo",{idJogo:idJogo});
     }
 
-    function GetJogos(){
-      axios.get(Config.API_PEGA_JOGOS,Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
+    async function GetJogos(){
+      let role = await AsyncStorage.getItem('tipoUser');
+
+      if(role == "ROLE_ADMIN"){
+        axios.get(Config.API_PEGA_JOGOS_ADM,Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
+        .then((resp)=>{
+          setGamesGet(resp.data)
+        })
+        .catch((e)=>{console.log(e)})
+      }else{
+        axios.get(Config.API_PEGA_JOGOS,Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
+        .then((resp)=>{
+          setGamesGet(resp.data)
+        })
+        .catch((e)=>{console.log(e)})
+      }
+
+      /*axios.get(Config.API_PEGA_JOGOS,Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept)
       .then((resp)=>{
         setGamesGet(resp.data)
       })
-      .catch((e)=>{console.log(e)})
+      .catch((e)=>{console.log(e)})*/
     }
+
     function GetBanner(){
       axios.get(Config.API_BANNER_PRODUCTS, Config.TIMEOUT_REQUEST, Config.HEADER_REQUEST.Accept)
       .then((response)=>{
@@ -83,7 +104,7 @@ export default function TelaInicial ({ navigation }){
         
         <View style={{flexDirection:'row',flexWrap:'wrap'}}>
             {
-              gamesGet?
+              gamesGet.length > 1?
               gamesGet.map((game,key) =>(
 
               <View key={key}

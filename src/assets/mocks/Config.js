@@ -3,7 +3,8 @@ const Config = {
     API_CRIA_USER: "http://192.168.0.105:8080/customers",
     API_PEGA_USER:"http://192.168.0.105:8080/customers/details", 
     API_PEGA_ADM:"http://192.168.0.105:8080/admins/details", 
-    API_PEGA_JOGOS:"http://192.168.0.105:8080/products/all",
+    API_PEGA_JOGOS:"http://192.168.0.105:8080/products/avaible",
+    API_PEGA_JOGOS_ADM:"http://192.168.0.105:8080/products/all",
     API_PEGA_JOGUINHO:"http://192.168.0.105:8080/products/",
     API_PEGA_FILTROS:"http://192.168.0.105:8080/categories/getAll",
     API_PEGA_DESENVOLVEDORES:"http://192.168.0.105:8080/developers/getAll",
@@ -16,9 +17,12 @@ const Config = {
     API_PEGA_BANDEIRAS_CARTAO: "http://192.168.0.105:8080/banners",
     API_FINALIZA_COMPRA: "http://192.168.0.105:8080/orders",
     API_ATUALZA_ORDER_STATUS: "http://192.168.0.105:8080/orders/",
+    API_GET_ORDER_ADM: "http://192.168.0.105:8080/orders/allCustomers",
     API_GET_GAMES_COSTUMER: "http://192.168.0.105:8080/customerGames",
+    API_GET_ORDERS_CUSTOMERS:"http://192.168.0.105:8080/customerGames/all",
     API_SEE_GAME_KEY:"http://192.168.0.105:8080/customerGames/",
     API_CRIA_JOGOS:"http://192.168.0.105:8080/products",
+    API_ATUALIZA_JOGOS:"http://192.168.0.105:8080/products/",
 
     TIMEOUT_REQUEST: 5000,
     HEADER_REQUEST: {

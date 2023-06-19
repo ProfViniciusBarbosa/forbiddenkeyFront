@@ -81,7 +81,7 @@ const TelaLogin = (props)=>{
               client_secret: senhaLogin,
               grant_type: "client_credentials",
           }
-             const resp = await LoginService.signin({username:usuarioLogin,password: senhaLogin})
+             const resp = await LoginService.signin({username:usuarioLogin.toLowerCase(),password: senhaLogin})
               console.log(resp.data)
               var tokenzin = await AsyncStorage.getItem('token')
               if(tokenzin != null){

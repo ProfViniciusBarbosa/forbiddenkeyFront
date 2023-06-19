@@ -272,7 +272,7 @@ export default function TelaCart({navigation}) {
       <View style={styles.viewRow}>
         <Text style={styles.Total}>TOTAL</Text>
 
-        <Text style={styles.Total}>{currentCart.totalValue}</Text>
+        <Text style={styles.Total}>R$ {currentCart.totalValue? parseFloat((currentCart.totalValue).toFixed(2)):null}</Text>
       </View> 
 
       <View style={styles.linha} />

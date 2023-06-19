@@ -13,7 +13,7 @@ import {
 
 import DropDownPicker from 'react-native-dropdown-picker';
 import COR from '../assets/CSS/COR';
-
+import { useNavigation } from '@react-navigation/native';
 import SearchImg from '../assets/icons/lupinha.png';
 import RemoveImg from '../assets/icons/remover.png';
 import Config from '../assets/mocks/Config';
@@ -44,7 +44,7 @@ export default function TelaCatalogo({route}){
       const [itensDesenvolvedora, setItensDesenvolvedora] = useState([]);
 
       const EnviarDadosTelaJogoENavegar = (idJogo) =>{
-        route.params.nav.navigate("Jogo",{idJogo:idJogo,nav:route.params.nav});
+        navigation.navigate("Jogo",{idJogo:idJogo});
       }
     
       const [categoria, setCategoria] = useState('');
@@ -60,6 +60,8 @@ export default function TelaCatalogo({route}){
     //route.params.desenvolvedora? route.params.desenvolvedora :
       const [Desenvolvedora, setDesenvolvedora] = useState('');
       const [openDesenvolvedora, setOpenDesenvolvedora] = useState(false);
+
+      const navigation = useNavigation();
 
     useEffect(()=>{
         GetJogos()
@@ -250,7 +252,7 @@ export default function TelaCatalogo({route}){
           </View>
           <View style={{flexDirection:'row',flexWrap:'wrap',marginTop:10}}>
           {
-            gamesGet?
+            gamesGet.length > 1?
             gamesGet.filter((game) =>{
                
               //1 categoria

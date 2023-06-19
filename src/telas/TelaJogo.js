@@ -5,7 +5,8 @@ import COR from '../assets/CSS/COR';
 import Config from '../assets/mocks/Config';
 import BarraSuperior from '../componentes/BarraSuperior';
 import carrinho from '../assets/icons/carrinho.png';
-
+import lapisEdit from '../assets/icons/lapis.png'
+import { useNavigation } from '@react-navigation/native';
 import { LogBox } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -19,21 +20,23 @@ const { width,height } = Dimensions.get('window');
 export default function TelaJogo({route}){
     
     const [jogoGetById,setJogoGetById] = useState([{}]);
-
+    
+    const [tipoUser,setTipoUser] = useState('ROLE_CUSTOMER')
+    
     const categories = jogoGetById.categories;
-
-    const [cart, setCart] = useState([{}])
 
     const [desenvolvedora,setDesenvolvedor] = useState('');
 
     const [distribuidora,setDistribuidora] = useState('');
 
+    const navigation1 = useNavigation();
+
     useEffect(() => {
         GetJogos();
-    
+
         const backAction = () => {
     
-          route.params.nav.goBack()
+          navigation1.goBack()
           return true;
         };
     
@@ -64,7 +67,7 @@ export default function TelaJogo({route}){
                   "Item adicionado ao carrinho",
                     [{
                        text:"OK",
-                       onPress: () => (route.params.nav.navigate('Carrinho'))
+                       onPress: () => (navigation1.navigate('Carrinho'))
                   }]))
 
 
@@ -72,7 +75,7 @@ export default function TelaJogo({route}){
                 else{
                     Alert.alert(
                         "Erro, Cadastro nescessario para concluir ação! ", "Nescessario fazer login para prosseguir...",
-                        [{ text: "OK", onPress: () => (route.params.nav.navigate('Login')) }] 
+                        [{ text: "OK", onPress: () => (navigation1.nav.navigate('Login')) }] 
                     )
                 }
             }).catch((error)=>{
@@ -82,7 +85,7 @@ export default function TelaJogo({route}){
                        "Item adicionado ao carrinho",
                          [{
                             text:"OK",
-                            onPress: () => (route.params.nav.navigate('Carrinho'))
+                            onPress: () => (navigation1.navigate('Carrinho'))
                        }])
                 }).catch((e)=>{
                     console.log(e)
@@ -91,14 +94,20 @@ export default function TelaJogo({route}){
                         "Nescessario fazer login para prosseguir...",
                         [{
                             text: "OK",
-                           onPress: () => (route.params.nav.navigate('Login'))
+                           onPress: () => (navigation1.navigate('Login'))
                        }]
                       )
                 })
                 })
             }
 
-    function GetJogos(){
+    const editarDadosJogo = (idJogo) =>{
+        navigation1.navigate("ADMEditaJogo",{idJogo:idJogo,nav:navigation1});
+    }
+
+    async function GetJogos(){
+
+        setTipoUser(await AsyncStorage.getItem('tipoUser'));
       
         axios.get(Config.API_PEGA_JOGUINHO+route.params.idJogo,
            Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
@@ -118,7 +127,7 @@ export default function TelaJogo({route}){
 
     return(
         <View>
-            <BarraSuperior title ='Jogo' navigation = {route.params.nav}/>
+            <BarraSuperior title ='Jogo' navigation = {navigation1}/>
             
             <View style={styles.fundoPromocoes}>
                 <Text style={styles.textoPromocoes}>
@@ -129,17 +138,36 @@ export default function TelaJogo({route}){
                 <View style={styles.imagemJogo}>
                     <Image style={{width:'100%',height:'100%'}} source={{uri:jogoGetById.imgUrl}}/>
                 </View>
-            <View style={{flexDirection:'row',width:width,height:70}}>
+            <View style={{flexDirection:'row',width:width,height:100}}>
                 <View style={styles.precoBox}>
                     <Text style={styles.precoTexto}>
                         R${jogoGetById.price}
                  </Text>
+
+                 {
+                    tipoUser == 'ROLE_ADMIN'?
+                    <Text style={{marginTop:10,color:COR.vinho,fontSize:18,alignSelf:'center'}}>
+                        Estoque: {jogoGetById.quantity} unidade
+                    </Text>
+                    :
+                    null
+                 }
+                 
                 </View>
+                {
+                    tipoUser == 'ROLE_ADMIN'?
+                    <TouchableOpacity style={styles.editarJogo} onPress={()=>{
+                        editarDadosJogo(jogoGetById.id)
+                        }}>
+                        <Image style={{width:40,height:40,alignSelf:'center'}} source={lapisEdit} />
+                     </TouchableOpacity>
+                    :
                 <TouchableOpacity style={styles.carrinhoBox} onPress={()=>{
                     addItemToCart(jogoGetById.id)
                     }}>
                     <Image style={{width:40,height:40,alignSelf:'center'}} source={carrinho} />
                  </TouchableOpacity>
+                }
             </View>
             <View style={styles.descricaoJogo}>
                 <Text style={styles.descricaoTexto}>Descrição</Text>
@@ -282,6 +310,24 @@ const styles = StyleSheet.create({
         marginTop:10,
         marginLeft:80,
         backgroundColor:COR.vermelho,
+        shadowColor: COR.cinza,
+        shadowOffset: {
+	        width: 0,
+	        height: 7,
+        },
+        shadowOpacity: 0.43,
+        shadowRadius: 9.51,
+        elevation: 15,
+        borderRadius:8,
+        paddingHorizontal:7,
+        justifyContent:'center',
+    },
+    editarJogo:{
+        width:70,
+        height:50,
+        marginTop:10,
+        marginLeft:80,
+        backgroundColor:COR.marrom,
         shadowColor: COR.cinza,
         shadowOffset: {
 	        width: 0,

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -40,10 +41,10 @@ export default function TelaPedidosAdm() {
       headers: { Authorization: `Bearer ${token}` }
     };
     
-    axios.get(Config.API_FINALIZA_COMPRA,config)
+    axios.get(Config. API_GET_ORDER_ADM,config)
     .then((response)=> {
 
-      console.log(response.data[0])
+      console.log(response.data)
       
       if(Object.keys(response.data).length > 0){
 
@@ -80,8 +81,63 @@ export default function TelaPedidosAdm() {
         }
      
     })
-    .catch((e)=>{console.log('deu ruim'+e)})
+    .catch((e)=>{console.log("Error:" + e)})
   
+  }
+
+  async function cancelaPedidos(id){
+    let token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+
+    const params = {
+      orderStatus: "CANCELADO",
+    };
+    
+    Alert.alert("Cancelar Compra ?", "Você realmente deseja cancelar pedido?", [
+      {
+        text: "Sim",
+        onPress: () => {
+          axios.put(Config.API_ATUALZA_ORDER_STATUS+id,params,config)
+          .then(()=>{
+            getPedidos()
+          })
+          .catch((e)=>{console.log(e)})
+        },
+        style: "cancel"
+      },
+      { text: "Nâo", onPress: () => null }
+    ]);
+    
+  }
+
+  async function finalizaPedido(id){
+    let token = await AsyncStorage.getItem('token');
+
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+
+    const params = {
+        orderStatus: "FINALIZADO",
+    }
+
+    
+    Alert.alert(" Deseja aprovar compra ?", "Você realmente deseja aprovar pedido?", [
+      {
+        text: "Sim",
+        onPress: () => {
+          axios.put(Config.API_ATUALZA_ORDER_STATUS+id,params,config)
+          .then(()=>{
+            getPedidos()
+          })
+          .catch((e)=>{console.log(e)})
+        },
+        style: "cancel"
+      },
+      { text: "Nâo", onPress: () => null }
+    ]);
   }
 
   return (
@@ -91,63 +147,97 @@ export default function TelaPedidosAdm() {
           <Text style={styles.titulo}>Pedidos Adm</Text>
         </View>
 
-        <View style={styles.viewDados}>
-          <View style={styles.viewRow}>
-            <View style={styles.viewRow}>
-              <Text>Protocolo: </Text>
-              <Text style={styles.info}>123456789 </Text>
-            </View>
+        <View style={styles.linha} />
 
+        {
+          temItens?
+          orders.map((pedido,key) => (
+            <View key={key} style={styles.viewDados}>
             <View style={styles.viewRow}>
-              <Text>Data: </Text>
-              <Text style={styles.info}>19/11/2022</Text>
-            </View>
-          </View>
-
-          <View style={styles.viewProduto}>
-            <View style={styles.viewRow}>
-              <Text>Produto: </Text>
-              <View style={styles.viewTextProduto}>
-                <Text numberOfLines={1} style={styles.textoAzul}>
-                  Thes sims 4 deluxe
-                </Text>
+              <View style={styles.viewRow}>
+                <Text>Protocolo: </Text>
+                <Text style={styles.info}> {pedido.protocolo} </Text>
+              </View>
+  
+              <View style={styles.viewRow}>
+                <Text>Data:  </Text>
+                <Text style={styles.info}>{pedido.data?pedido.data.substring(pedido.data,10):null}</Text>
               </View>
             </View>
-          </View>
-
-          <View style={styles.viewRow}>
+  
+           
+                {
+                  produtos?
+                    produtos.filter((comanda)=>{
+                
+                            if(comanda.comanda == key){
+                                return comanda
+                            }
+                        }
+                    ).map(
+                      (jogos, key) => ( 
+                        <View key={key} style={styles.viewProduto}>
+                              <View style={styles.viewRow}>
+                              <Text>Produto: </Text>
+                              <View style={styles.viewTextProduto}>
+                                {console.log(jogos)}
+                                <Text numberOfLines={1} style={styles.textoAzul}>
+                                  {jogos.produto.name}
+                                </Text>
+                              </View>
+                             </View>
+                         </View>
+                      )
+                    )
+                    :
+                    <>
+                    </>
+                }
+              
+  
             <View style={styles.viewRow}>
-              <Text>Pagamento: </Text>
-              <Text style={styles.info}>cartão</Text>
+              <View style={styles.viewRow}>
+                <Text>Pagamento: </Text>
+                <Text style={styles.info}> {pedido.pagamento} </Text>
+              </View>
+  
+              <View style={styles.viewRow}>
+                <Text>Valor </Text>
+                <Text style={styles.info}>R$ {pedido.valor? parseFloat((pedido.valor).toFixed(2)):null}</Text>
+              </View>
             </View>
-
+  
             <View style={styles.viewRow}>
-              <Text>Valor </Text>
-              <Text style={styles.info}>R$140,90</Text>
-            </View>
-          </View>
+              <Text>Status: </Text>
+              <Text style={styles.textoAzul}> {pedido.status} </Text>
+              {
+                pedido.status== "EM_PROCESSAMENTO"?
+                <View>
+                <TouchableOpacity style={styles.viewRemover} onPress={()=>cancelaPedidos(pedido.id)}>
+                  <Text style={styles.Remover}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.viewFinalizar} onPress={()=>finalizaPedido(pedido.id)}>
+                  <Text style={styles.Remover}>Finalizar</Text>
+                </TouchableOpacity>
+                </View>
 
-          <View style={styles.viewRow}>
-            <Text>Status: </Text>
-            <View style={styles.viewSelect}>
-              <DropDownPicker
-                listMode="MODAL"
-                open={openStatus}
-                value={status}
-                items={itensStatus}
-                setOpen={setOpenStatus}
-                setValue={setStatus}
-                setItems={setItensStatus}
-                placeholder="Selecione"
-                style={styles.Select}
-              />
+              :
+              <View style={styles.viewRemoverOculto}>
+                <Text style={styles.RemoverOculto}>Finalizado</Text>
+              </View>
+              }
+              
             </View>
-            <TouchableOpacity style={styles.viewSalvar}>
-              <Text style={styles.Salvar}>Salvar</Text>
-            </TouchableOpacity>
+
+            <View style={styles.linha2} />
           </View>
-        </View>
-        <View style={styles.linha} />
+          
+          ))       
+        :
+        <Text style={{fontSize:20,textAlign:'center',color:COR.vinho}}>
+          Sem itens até o momento
+        </Text>
+        }
       </View>
     </ScrollView>
   );
@@ -178,7 +268,6 @@ const styles = StyleSheet.create({
   viewDados: {
     width: '90%',
   },
-
   viewProduto: {
     width: '95%',
     height: 50,
@@ -192,26 +281,40 @@ const styles = StyleSheet.create({
   viewTextProduto: {
     width: '70%',
   },
-  viewSelect: {
-    width: '48%',
-  },
-  Select: {
-    backgroundColor: 'transparent',
-    borderColor: COR.verdeFosco,
-    marginVertical: 5,
-  },
-  viewSalvar: {
-    backgroundColor: COR.azulado,
+  viewRemover: {
+    backgroundColor: COR.vinho,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 5,
     borderRadius: 4,
     marginTop: 5,
   },
-  Salvar: {
+  viewFinalizar: {
+    backgroundColor: COR.verdeFosco,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    borderRadius: 4,
+    marginTop: 5,
+  },
+  viewRemoverOculto: {
+    backgroundColor: COR.branco,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    borderRadius: 4,
+    marginTop: 5,
+  },
+  Remover: {
     fontSize: 15,
     fontWeight: '500',
-    color: COR.verdeFosco,
+    color: COR.branco,
+    paddingHorizontal: 8,
+  },
+  RemoverOculto: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: COR.cinza,
     paddingHorizontal: 8,
   },
   textoAzul: {
@@ -241,6 +344,14 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: COR.cinza,
     margin: 20,
+  },
+  linha2: {
+    width: 500,
+    height: 1,
+    backgroundColor: COR.cinza,
+    marginBottom:10,
+    marginTop:10,
+    marginLeft:-20
   },
   label: {
     fontSize: 20,

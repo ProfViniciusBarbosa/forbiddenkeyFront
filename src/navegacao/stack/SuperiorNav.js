@@ -12,6 +12,7 @@ import TelaConta from '../../telas/TelaConta';
 import TelaCadastroJogo from '../../telas/TelaADMCadastraJogo';
 import TelaPedidos from '../../telas/TelaPedidos';
 import TelaPedidosAdm from '../../telas/TelaADMPedidos';
+import TelaEditaJogo from '../../telas/TelaADMEditaJogo';
 
 
 const Stack = createStackNavigator();
@@ -37,6 +38,8 @@ const PrincipalNavegacao = () => {
       <Stack.Screen name="ADMPedidos" component={TelaPedidosAdm} />
       <Stack.Screen name="ADMCadastra" component={TelaCadastroJogo} />
       <Stack.Screen name="Chave" component={TelaChaves} />
+      <Stack.Screen name="ADMEditaJogo" component={TelaEditaJogo} />
+
 
     </Stack.Navigator>
   );
@@ -57,6 +60,7 @@ const SecundariaNavegacao = () => {
       <Stack.Screen name="ADMPedidos" component={TelaPedidosAdm} />
       <Stack.Screen name="ADMCadastra" component={TelaCadastroJogo} />
       <Stack.Screen name="Chave" component={TelaChaves} />
+      <Stack.Screen name="ADMEditaJogo" component={TelaEditaJogo} />
     </Stack.Navigator>
   );
 }
@@ -75,6 +79,7 @@ const TerceiraNavegacao = () => {
       <Stack.Screen name="ADMPedidos" component={TelaPedidosAdm} />
       <Stack.Screen name="ADMCadastra" component={TelaCadastroJogo} />
       <Stack.Screen name="Iniciar" component={TelaInicial} />
+      <Stack.Screen name="ADMEditaJogo" component={TelaEditaJogo} />
  
     </Stack.Navigator>
   );

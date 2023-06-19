@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   Image,
+  Alert,
   TouchableOpacity,
   Dimensions,
   ScrollView,
@@ -19,23 +20,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
-export default function TelaCadastroJogo({navigation}) {
+export default function TelaEditaJogo({route}) {
+
+  const [isEditing, setIsEditing] = useState(false);
+
   const [nome, setNome] = useState('');
 
   const [quantidade, setQuantidade] = useState('');
 
   const [descricao, setDescricao] = useState('');
-  
+
   const [preco, setPreco] = useState('');
 
-  const [imagemUri, setimagemUri] = useState('');
+    const [imagemUri, setimagemUri] = useState('');
 
   const [teste, setTeste] = useState([]);
 
   const [dadosMudaram, setDadosMudaram] = useState(false);
-
+  
   //distribuidora
-  const [getCompletoDistribuidoras,setGetCompletoDistribuidoras] = useState([{}])
+  const [getCompletoDistribuidoras, setGetCompletoDistribuidoras] = useState([{}])
 
   const [itensDistribuidora, setItensDistribuidora] = useState([]);
 
@@ -44,7 +48,7 @@ export default function TelaCadastroJogo({navigation}) {
   const [openDistribuidora, setOpenDistribuidora] = useState(false);
 
   //desenvolvedora
-  const [getCompletoDesenvolvedoras,setGetCompletoDesenvolvedoras] = useState([{}])
+  const [getCompletoDesenvolvedoras,setGetCompletoDesenvolvedoras] = useState([{}]);
 
   const [itensDesenvolvedora, setItensDesenvolvedora] = useState([]);
 
@@ -55,7 +59,7 @@ export default function TelaCadastroJogo({navigation}) {
   //categoria1
   const [categoria, setCategoria] = useState('');
 
-  const [getCompletoCategorias,setGetCompletoCategorias] = useState([{}])
+  const [getCompletoCategorias,setGetCompletoCategorias] = useState([{}]);
 
   const [openCategoria, setOpenCategoria] = useState(false);
 
@@ -70,19 +74,19 @@ export default function TelaCadastroJogo({navigation}) {
 
   const [itensCategoria2, setItensCategoria2] = useState([]);
 
-   //categoria3
-   const [categoria3, setCategoria3] = useState('');
+  //categoria3
+  const [categoria3, setCategoria3] = useState('');
 
-   const [getCompletoCategorias3,setGetCompletoCategorias3] = useState([{}])
+  const [getCompletoCategorias3,setGetCompletoCategorias3] = useState([{}]);
 
-   const [openCategoria3, setOpenCategoria3] = useState(false);
+  const [openCategoria3, setOpenCategoria3] = useState(false);
 
-   const [itensCategoria3, setItensCategoria3] = useState([]);
+  const [itensCategoria3, setItensCategoria3] = useState([]);
 
   //categoria4
   const [categoria4, setCategoria4] = useState('');
 
-  const [getCompletoCategorias4,setGetCompletoCategorias4] = useState([{}])
+  const [getCompletoCategorias4,setGetCompletoCategorias4] = useState([{}]);
 
   const [openCategoria4, setOpenCategoria4] = useState(false);
 
@@ -90,102 +94,104 @@ export default function TelaCadastroJogo({navigation}) {
 
 
   function verCampos(){
+    //Preenche quando ha uma categoria
     if(categoria != '' && categoria2 == '' && categoria3 == '' && categoria4 == ''){
       setTeste([
         {
         id: categoria,
-        name: itensCategoria[categoria-1].label,
+        name: itensCategoria[categoria-1]?itensCategoria[categoria-1].label:'',
         products: []
       }
     ]
     )
   }
-    if(categoria != '' && categoria2 != '' && categoria3 == '' && categoria4 == ''){
+  
+  //Preenche quando ha duas categorias
+  if(categoria != '' && categoria2 != '' && categoria3 == '' && categoria4 == ''){
       setTeste([
         {
           id: categoria,
-          name: itensCategoria[categoria-1].label,
+          name: itensCategoria[categoria-1]?itensCategoria[categoria-1].label:'',
           products: []
         },
         {
         id: categoria2,
-        name: itensCategoria2[categoria2-1].label,
+        name: itensCategoria2[categoria2-1]?itensCategoria2[categoria2-1].label:'',
         products: []
       }
     ])
     }
 
-    if(categoria != '' && categoria2 != '' && categoria3 != '' && categoria4 == ''){
-      setTeste([
-        {
-          id: categoria,
-          name: itensCategoria[categoria-1].label,
-          products: []
-        },
-        {
-        id: categoria2,
-        name: itensCategoria2[categoria2-1].label,
+  //Preenche quando ha tres categorias
+  if(categoria != '' && categoria2 != '' && categoria3 != '' && categoria4 == ''){
+    setTeste([
+      {
+        id: categoria,
+        name: itensCategoria[categoria-1]?itensCategoria[categoria-1].label:'',
         products: []
-        },
-        {
+      },
+      {
+        id: categoria2,
+        name: itensCategoria2[categoria2-1]?itensCategoria2[categoria2-1].label:'',
+        products: []
+      },
+      {
         id: categoria3,
-        name: itensCategoria3[categoria3-1].label,
+        name: itensCategoria3[categoria3-1]?itensCategoria3[categoria3-1].label:'',
         products: []
       }
     ])
     }
 
+    //Preenche quando ha quatro categorias
     if(categoria != '' && categoria2 != '' && categoria3 != '' && categoria4 != ''){
       setTeste([
         {
           id: categoria,
-          name: itensCategoria[categoria-1].label,
+          name: itensCategoria[categoria-1]?itensCategoria[categoria-1].label:'',
           products: []
         },
         {
         id: categoria2,
-        name: itensCategoria2[categoria2-1].label,
+        name: itensCategoria2[categoria2-1]?itensCategoria2[categoria2-1].label:'',
         products: []
         },
         {
         id: categoria3,
-        name: itensCategoria3[categoria3-1].label,
+        name: itensCategoria3[categoria3-1]?itensCategoria3[categoria3-1].label:'',
         products: []
       },
       {
         id: categoria4,
-        name: itensCategoria4[categoria4-1].label,
+        name: itensCategoria4[categoria4-1]?itensCategoria4[categoria4-1].label:'',
         products: []
       }
     ])
     }
     } 
     
-    var formularioJogo = {
-      name: nome,
-      quantity: quantidade*1,
-      description: descricao,
-      price: preco*1,
-      developerDTO: {id: Desenvolvedora},
-      distributorDTO:{id: distribuidora},
-      launchDate: "2018-11-28T00:00:00Z",
-      imgUrl: imagemUri,
-      categories: teste
-    }
 
+  var formularioJogo = {
+    name: nome,
+    quantity: quantidade*1,
+    description: descricao,
+    price: preco*1,
+    developerDTO: {id: Desenvolvedora},
+    distributorDTO:{id: distribuidora},
+    launchDate: "2018-11-28T00:00:00Z",
+    imgUrl: imagemUri,
+    categories: teste
+  }
 
 function enviaDados(){
-
   verCampos()
 
   if( nome != '' && quantidade != '' && descricao != '' && preco != '' && 
   distribuidora != '' && Desenvolvedora != '' && imagemUri != '' && categoria != ''){
-
     setDadosMudaram(true)
- 
+  }
 }
 
-}
 async function validaDados(){
   
   let token = await AsyncStorage.getItem('token');
@@ -193,14 +199,26 @@ async function validaDados(){
   const config = {
     headers: { Authorization: `Bearer ${token}` }
   };
+console.log(formularioJogo)
+  axios.put(Config.API_ATUALIZA_JOGOS+route.params.idJogo,formularioJogo,config)
+    .then(()=>{
 
-  console.log(formularioJogo)
+      console.log("Jogo Editado com Sucesso");
 
-  axios.post(Config.API_CRIA_JOGOS,formularioJogo,config)
-  .then(()=>{console.log("Cadastrou o game")})
-  .catch((e)=>{
-    console.log(e)})
-    
+      Alert.alert(
+        "Edição Finalizada",
+        "Suas modificações foram Salvas com sucesso!",
+        [
+          {
+            text: "OK",
+            onPress: () => (route.params.nav.navigate("Catalogo"))
+          },
+        ]
+      );
+
+    })
+  .catch((e)=>{console.log(e)})
+
   setDadosMudaram(false)
 }
 
@@ -210,11 +228,25 @@ useEffect(()=>{
   }
 },[dadosMudaram])
 
-  useEffect(()=>{
-    GetCategorias();
-    GetDistribuidoras();
-    GetDesenvolvedores();
-  },[])
+
+useEffect(()=>{
+  GetJogos();
+  GetCategorias();
+  GetDistribuidoras();
+  GetDesenvolvedores();
+},[])
+
+
+  async function GetCategorias(){
+    axios.get(Config.API_PEGA_FILTROS).then((resp)=>{
+      setGetCompletoCategorias(resp.data) 
+      setGetCompletoCategorias2(resp.data)
+      setGetCompletoCategorias3(resp.data)
+      setGetCompletoCategorias4(resp.data)
+    }).catch(
+      (e)=>{console.log(e)}
+      )
+  }
 
   //Categoria 01
   useEffect(()=>{
@@ -233,19 +265,6 @@ useEffect(()=>{
       }
           
     },[getCompletoCategorias])
-
-  async function GetCategorias(){
-
-    axios.get(Config.API_PEGA_FILTROS).then((resp)=>{
-    
-        setGetCompletoCategorias(resp.data)
-        setGetCompletoCategorias2(resp.data)
-        setGetCompletoCategorias3(resp.data)
-        setGetCompletoCategorias4(resp.data)
-        
-    }).catch((e)=>{console.log(e)})
-
-}
 
 //Categoria 02
   useEffect(()=>{
@@ -308,9 +327,6 @@ useEffect(()=>{
 
 //Distribuidoras
 useEffect(()=>{
-  console.log(categoria)
-},[categoria])
-useEffect(()=>{
   if(Object.keys(getCompletoDistribuidoras).length > 1){
   
     let newArray = [];
@@ -364,23 +380,52 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
 
 })}
 
+function GetJogos(){
+
+  axios.get(Config.API_PEGA_JOGUINHO+route.params.idJogo,
+     Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
+
+      if(resp.data != null){
+        setNome(resp.data.name);
+        setQuantidade(resp.data.quantity);
+        setDescricao(resp.data.description);
+        setDistribuidora(resp.data.distributorDTO.id);
+        setDesenvolvedora(resp.data.developerDTO.id);
+        setimagemUri(resp.data.imgUrl)
+        setPreco(resp.data.price)
+        setCategoria(resp.data.categories[0]? resp.data.categories[0].id : '')
+        setCategoria2(resp.data.categories[1]? resp.data.categories[1].id : '')
+        setCategoria3(resp.data.categories[2]? resp.data.categories[2].id : '')
+        setCategoria4(resp.data.categories[3]? resp.data.categories[3].id : '')
+     }
+      
+     }
+     ).catch ((e)=>{
+      console.log(e)
+    })
+}
+
   return (
     <ScrollView style={{marginBottom:10}}>
       <View style={styles.center}>
         <View style={styles.viewtitulo}>
-          <Text style={styles.titulo}>Cadastrar jogo</Text>
+          <Text style={styles.titulo}>Editar jogo</Text>
         </View>
 
         <View style={styles.viewDados}>
           <Text style={styles.label}>Nome do jogo: </Text>
           <TextInput
+            value={nome}
             onChangeText={value => setNome(value)}
+            onBlur={() => setIsEditing(false)}
             style={styles.input}
           />
 
           <Text style={styles.label}>Quantidade: </Text>
           <TextInput
             onChangeText={value => setQuantidade(value)}
+            value={String(quantidade)}
+            onBlur={()=> setIsEditing(false)}
             style={styles.input}
             keyboardType="numeric"
           />
@@ -388,13 +433,17 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
           <Text style={styles.label}>Descrição: </Text>
           <TextInput
             onChangeText={value => setDescricao(value)}
+            value={descricao}
+            onBlur={()=> setIsEditing(false)}
             style={styles.textArea}
             multiline
           />
 
           <Text style={styles.label}>Preço: </Text>
           <TextInput
+            value={String(preco)}
             onChangeText={value => setPreco(value)}
+            onBlur={()=> setIsEditing(false)}
             style={styles.input}
             keyboardType="numeric"
           />
@@ -408,7 +457,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
                 setOpen={setOpenDistribuidora}
                 setValue={setDistribuidora}
                 setItems={setItensDistribuidora}
-                placeholder="Distribuidora"
+                placeholder={distribuidora.length>1?distribuidora:'Distribuidora'}
                 searchable
                 searchPlaceholder="Pesquisar"
               />
@@ -429,7 +478,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
                 setOpen={setOpenDesenvolvedora}
                 setValue={setDesenvolvedora}
                 setItems={setItensDesenvolvedora}
-                placeholder="Desenvolvedora"
+                placeholder={Desenvolvedora.length>1?Desenvolvedora:'Desenvolvedora'}
                 searchable
                 searchPlaceholder="Pesquisar"
               />
@@ -444,6 +493,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
             placeholder="https://imagem.png"
             value={imagemUri}
             onChangeText={value => setimagemUri(value)}
+            onBlur={() => setIsEditing(false)}
             style={styles.input}
           />
 
@@ -458,7 +508,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
             setOpen={setOpenCategoria}
             setValue={setCategoria}
             setItems={setItensCategoria}
-            placeholder="Categoria 1"
+            placeholder={categoria.length>1? categoria: "Categoria 1"}
             searchable
             searchPlaceholder="Pesquisar"
           />
@@ -477,7 +527,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
             setOpen={setOpenCategoria2}
             setValue={setCategoria2}
             setItems={setItensCategoria2}
-            placeholder="Categoria 2"
+            placeholder={categoria2.length>1? categoria2:"Categoria 2"}
             searchable
             searchPlaceholder="Pesquisar"
           />
@@ -497,7 +547,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
             setOpen={setOpenCategoria3}
             setValue={setCategoria3}
             setItems={setItensCategoria3}
-            placeholder="Categoria 3"
+            placeholder={categoria3.length>1? categoria3:"Categoria 3"}
             searchable
             searchPlaceholder="Pesquisar"
           />
@@ -517,7 +567,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
             setOpen={setOpenCategoria4}
             setValue={setCategoria4}
             setItems={setItensCategoria4}
-            placeholder="Categoria 4"
+            placeholder={categoria4.length>1? categoria4:"Categoria 4"}
             searchable
             searchPlaceholder="Pesquisar"
           />
@@ -530,7 +580,7 @@ Config.TIMEOUT_REQUEST,Config.HEADER_REQUEST.Accept).then((resp)=>{
         </View>
 
         <TouchableOpacity onPress={()=>enviaDados()} style={styles.viewButton}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
+          <Text style={styles.buttonText}>Atualizar</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

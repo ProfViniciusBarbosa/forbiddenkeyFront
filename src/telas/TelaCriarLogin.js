@@ -63,7 +63,7 @@ export default function TelaCriarLogin({navigation}){
         var params = {
            firstName: usuarioNome,
            lastName: usuarioSobrenome,
-           email: usuarioLogin,
+           email: usuarioLogin.toLowerCase(),
            password: senhaLogin,
          }
                axios.post(Config.API_CRIA_USER,
