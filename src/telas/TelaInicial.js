@@ -73,7 +73,7 @@ export default function TelaInicial ({ navigation }){
     return (
       <View style={{backgroundColor:COR.branco}}>
 
-      <BarraSuperior title='Destaques' navigation = {navigation}/>
+      <BarraSuperior title='Destaques' navigation = {navigation1}/>
       <ScrollView style={{height:height-130,width:width}}
           decelerationRate={0}
           refreshControl={

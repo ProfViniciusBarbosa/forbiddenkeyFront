@@ -92,6 +92,7 @@ export default function TelaEditaJogo({route}) {
 
   const [itensCategoria4, setItensCategoria4] = useState([]);
 
+  
 
   function verCampos(){
     //Preenche quando ha uma categoria
@@ -190,6 +191,33 @@ function enviaDados(){
   distribuidora != '' && Desenvolvedora != '' && imagemUri != '' && categoria != ''){
     setDadosMudaram(true)
   }
+}
+async function removerJogo(){
+
+  let token = await AsyncStorage.getItem('token');
+    
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  };
+
+  axios.delete(Config.API_REMOVE_JOGOS+route.params.idJogo,config)
+    .then(()=>{
+
+      console.log("Jogo Deletado");
+
+      Alert.alert(
+        "Produto Inativado",
+        "Suas modificações foram Salvas com sucesso e o jogo foi removido de visualização!",
+        [
+          {
+            text: "OK",
+            onPress: () => (route.params.nav.navigate("Catalogo"))
+          },
+        ]
+      );
+
+    })
+  .catch((e)=>{console.log(e)})
 }
 
 async function validaDados(){
@@ -579,6 +607,10 @@ function GetJogos(){
           </View>
         </View>
 
+        <TouchableOpacity onPress={()=>removerJogo()} style={styles.viewButton2}>
+          <Text style={styles.buttonText}>Remover Jogo</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={()=>enviaDados()} style={styles.viewButton}>
           <Text style={styles.buttonText}>Atualizar</Text>
         </TouchableOpacity>
@@ -661,6 +693,15 @@ const styles = StyleSheet.create({
     backgroundColor: COR.verdeFosco,
     padding: 5,
     borderRadius: 8,
+    marginBottom:10,
+  },
+  viewButton2: {
+    width: '80%',
+    alignItems: 'center',
+    backgroundColor: COR.vermelho,
+    padding: 5,
+    borderRadius: 8,
+    marginBottom:10,
   },
   viewAddFoto: {
     backgroundColor: COR.azulado,
